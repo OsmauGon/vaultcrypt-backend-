@@ -1,0 +1,49 @@
+Hoy 14/11 vamos a empezar con el backend. Lo primero es crear la carpeta VAULTCRYPT-BACKEND y abrirla en el bash o windows power shell y ejecutar el comando npm init -y
+Instalamos las dependencias de desarrollo y los typados: express, jsonwebtoken, bcrypt y dotenv
+ejecutamos npx tsc --init para que se configure typescript y luego en tsconfig.json comentamos el compilerOptions que obtuvimos automaricamente por el siguiente:
+"compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true
+  }
+Creamos la carpeta SRC y dentro las carpetas API y UTILS
+A la par de SRC creamos los archivos .env y vercel.json
+El archivos vercel.json es para configurar l servicio de Vercel que es la plataforma donde vamos a desplegar el backend y lo que escribimos dentro es:
+{
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}
+Establecimos la primera variable de entonrno JWT_SECRET
+Empezamos a trabajar con el primer endpoint. Creamos el archivo usuario.ts dentro de la carpeta API y declaramos la funcion asincrona handlerPost que recibira el cuerpo de la solicitud y lo desestructurara  en email y password para procesarlo y devolver el objeto usuario, el token y el mensaje de exito
+Vamos a crear dentro de SRC la carpeta TYPES y dentro del archivo vercel.ts. Aqui vamos a declarar y exportar las interfaces VercelRequest y VercerResponse
+Procederemos a haer una testeo local con Postman haciendo una solicitud POST al endpoint http://localhost:3000/api/usuario con el cuerpo {"email": "oscar@vaultcrypt.com","password": "claveSegura123"}
+Salto el primer error. Primero que nada nos falto desarrollar en index.ts la configuracion de las variables de entorno y la aplicacion de express. Una vez hecho eso y ejecutando npx ts-node src/index.ts en la consola del VScode el servidor se levanto y pudimos realizar la solicitud POST de postman satisfactoriamente
+
+
+
+
+
+
+##LO QUE SIGUE:
+🔐 Autenticación y usuarios
+- [x] POST /usuario: registro con hash y JWT
+- [ ] POST /login: validación de credenciales y emisión de JWT
+- [ ] GET /usuario: devolver datos del usuario autenticado
+- [ ] PUT /usuario: permitir edición de datos personales
+🔏 Gestión de cuentas cifradas
+- [ ] POST /cuenta: guardar cuenta cifrada (usando clave derivada del JWT o passphrase)
+- [ ] GET /cuenta: devolver cuentas del usuario autenticado
+🧠 Seguridad y educación
+- [ ] Implementar cifrado con crypto de Node.js
+- [ ] Crear endpoint educativo (/api/educacion) que devuelva explicaciones sobre JWT, hashing y cifrado
+- [ ] Agregar mensajes emocionales en las respuestas del backend para reforzar UX educativa
+🚀 Infraestructura
+- [ ] Configurar despliegue en Vercel con vercel.json
+- [ ] Simular almacenamiento (in-memory o archivo temporal) para testeo
+- [ ] Preparar integración con front-end
