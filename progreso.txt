@@ -24,7 +24,7 @@ Empezamos a trabajar con el primer endpoint. Creamos el archivo usuario.ts dentr
 Vamos a crear dentro de SRC la carpeta TYPES y dentro del archivo vercel.ts. Aqui vamos a declarar y exportar las interfaces VercelRequest y VercerResponse
 Procederemos a haer una testeo local con Postman haciendo una solicitud POST al endpoint http://localhost:3000/api/usuario con el cuerpo {"email": "oscar@vaultcrypt.com","password": "claveSegura123"}
 Salto el primer error. Primero que nada nos falto desarrollar en index.ts la configuracion de las variables de entorno y la aplicacion de express. Una vez hecho eso y ejecutando npx ts-node src/index.ts en la consola del VScode el servidor se levanto y pudimos realizar la solicitud POST de postman satisfactoriamente
-
+Lo que sigue es la primer subida a github para eso ejecutamos git init en la consola del VScode y creamos el archivo .gitignore que debe enlistar a node_module, .env y a dist/
 
 
 
