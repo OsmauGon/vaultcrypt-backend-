@@ -20,12 +20,15 @@ El archivos vercel.json es para configurar l servicio de Vercel que es la plataf
   }
 }
 Establecimos la primera variable de entonrno JWT_SECRET
-Empezamos a trabajar con el primer endpoint. Creamos el archivo usuario.ts dentro de la carpeta API y declaramos la funcion asincrona handlerPost que recibira el cuerpo de la solicitud y lo desestructurara  en email y password para procesarlo y devolver el objeto usuario, el token y el mensaje de exito
+Empezamos a trabajar con el primer endpoint. Creamos el archivo usuario.ts dentro de la carpeta API y declaramos la funcion asincrona handlerPost que recibira el cuerpo de la solicitud y lo desestructurara  en email y password para procesarlo y devolver el objeto usuario, el token y el mensaje de exito. Esto es para hacer el registro de un usuario, pero falta adaptarlo para uqe reviba la palabra secreta y el nombre del usuario
 Vamos a crear dentro de SRC la carpeta TYPES y dentro del archivo vercel.ts. Aqui vamos a declarar y exportar las interfaces VercelRequest y VercerResponse
 Procederemos a haer una testeo local con Postman haciendo una solicitud POST al endpoint http://localhost:3000/api/usuario con el cuerpo {"email": "oscar@vaultcrypt.com","password": "claveSegura123"}
 Salto el primer error. Primero que nada nos falto desarrollar en index.ts la configuracion de las variables de entorno y la aplicacion de express. Una vez hecho eso y ejecutando npx ts-node src/index.ts en la consola del VScode el servidor se levanto y pudimos realizar la solicitud POST de postman satisfactoriamente
 Lo que sigue es la primer subida a github para eso ejecutamos git init en la consola del VScode y creamos el archivo .gitignore que debe enlistar a node_module, .env y a dist/
 
+## Dia 2 (17/11)
+Hoy vamos a trabajar en el endpoint del login, ya tenemos el endpoint de resgistro en usuario.ts. Empezaremos creadon el archivo login.ts dentro de la carpeta API.
+Declaramos la funcion handlerPostLogin para verificar el logueo de un usuario y lo dejamos operativo y probado por Postman
 
 
 
@@ -33,7 +36,7 @@ Lo que sigue es la primer subida a github para eso ejecutamos git init en la con
 ##LO QUE SIGUE:
 🔐 Autenticación y usuarios
 - [x] POST /usuario: registro con hash y JWT
-- [ ] POST /login: validación de credenciales y emisión de JWT
+- [x] POST /login: validación de credenciales y emisión de JWT
 - [ ] GET /usuario: devolver datos del usuario autenticado
 - [ ] PUT /usuario: permitir edición de datos personales
 🔏 Gestión de cuentas cifradas
@@ -47,3 +50,6 @@ Lo que sigue es la primer subida a github para eso ejecutamos git init en la con
 - [ ] Configurar despliegue en Vercel con vercel.json
 - [ ] Simular almacenamiento (in-memory o archivo temporal) para testeo
 - [ ] Preparar integración con front-end
+
+Aun falta:
+-En la funcion handlerPost del archivo usaurio.ts adaptar la funcion para uqe reviba la palabra secreta y el nombre del usuario
