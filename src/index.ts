@@ -1,15 +1,17 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import usuarioHandler from './api/usuario';
-import handlerPostLogin from './api/login';
+import usersHandler from './api/usuario';
+import loginHandler from './api/login';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-app.post('/api/usuario', usuarioHandler);
-app.post('/api/login', handlerPostLogin);
+app.post('/api/usuario', usersHandler);
+app.get('/api/usuario',usersHandler)
+app.put('/api/usuario',usersHandler)
+app.post('/api/login', loginHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -29,6 +29,7 @@ Lo que sigue es la primer subida a github para eso ejecutamos git init en la con
 ## Dia 2 (17/11)
 Hoy vamos a trabajar en el endpoint del login, ya tenemos el endpoint de resgistro en usuario.ts. Empezaremos creadon el archivo login.ts dentro de la carpeta API.
 Declaramos la funcion handlerPostLogin para verificar el logueo de un usuario y lo dejamos operativo y probado por Postman
+Al empezar a trabajar con el endpoint GET de usuarios la IA sugirio extender la funcion del archicos usuario.ts, por lo que le hare las siguientes modificaciones: cambiare el nombre a usersHandler y metera la logica del registro de usuario dentro de un IF que verifique el metodo de la solicitud y use ELSE IF para las otras dos (GET y PUT) de esta manera unificara las funciones POST, GET y PUT en el archivo usuario.ts
 
 
 

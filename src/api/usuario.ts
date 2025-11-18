@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { IncomingMessage, ServerResponse } from 'http';
+import { Usuario } from '../types/user';
 
 export interface VercelRequest extends IncomingMessage {
   body: any;
@@ -13,34 +14,85 @@ export interface VercelResponse extends ServerResponse {
   json: (body: any) => void;
 }
 
+//Simulacion de base de datos en memoria:
+const usuariosSimualdos :Usuario[] = [
+    {
+        email: 'oscar@vaultcrypt.com',
+        password: '$2b$10$HX03FC8uOTu1K8s9Ge1dfetfLvIflGWiQ26DtZrOn/tfnQK7ibvSq', // reemplazar con hash real
+    }
+];
+export default async function usersHandler(req: VercelRequest, res: VercelResponse){
+    if(req.method === 'POST'){
+        const {email, password} = req.body;
+        if(!email || !password){
+            res.status(400).json({message: 'Faltan campos requeridos'})
+            return
+        }
+        const hashedPassword = await bcrypt.hash(password,18);
+        const token = jwt.sign({email},process.env.JWT_SECRET!,{expiresIn: '1h'})
+        const usuario = {email, password: hashedPassword}
+        //falta la logica de guardar en base de datos
+        res.status(201).json({
+            message: 'Usuario registrado con exito',
+            token,
+            usuario
+        })
+    }
+    else if(req.method === 'GET'){
+        const authHeader = req.headers['authorization'];
+        if(!authHeader || !authHeader.startsWith('Bearer ')){
+            res.status(401).json({message: 'Token no proporcionado'})
+            return
+        }
+        const token = authHeader.split(' ')[1]
+        try{
+            const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {email: string};
+            const usuario = usuariosSimualdos.find(u => u.email === decoded.email)
+            //aqui va la logica de base de datos
+            if(!usuario){
+                res.status(404).json({message: 'Usuario no encontrado'})
+                return;
+            }
+            res.status(200).json({
+                message: 'Usuario autenticado',
+                email: usuario.email
+            })
+        } catch (error){
+            res.status(401).json({message: 'Token invalido o expirado'})
+        }
+    }
+    else if(req.method === 'PUT'){
+        const authHeader = req.headers['authorization'];
+        if(!authHeader || !authHeader.startsWith('Bearer ')){
+            res.status(401).json({message: 'Token no proporcionado'})
+            return
+        }
+        const token = authHeader.split(' ')[1]
+        try{
+            const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { email: string };
+            const index = usuariosSimualdos.findIndex(u => u.email === decoded.email)
+            if(index === -1){
+                res.status(404).json({message: 'Usuario no encontrado'})
+                return
+            }
+            const {email: nuevoEmail, password: nuevaPassword} = req.body;
+            if(!nuevoEmail && !nuevaPassword){
+                res.status(400).json({message: 'No se proporcionaron datos para actualizar'})
+                return
+            }
+            //aqui va la logica para editar registros de la base de datos
+            if(nuevoEmail) usuariosSimualdos[index].email = nuevoEmail
+            if(nuevaPassword){
+                const hashed = await bcrypt.hash(nuevaPassword, 18)
+                usuariosSimualdos[index].password = hashed
+            }
+            res.status(200).json({message: 'Usuario actualizado con exito'})
 
-export default async function handlerPost(req: VercelRequest, res: VercelResponse) {
-    if(req.method !== 'POST') {
+        } catch {
+            res.status(401).json({ message: 'Token inválido o expirado' });
+        }
+    }
+    else {
         res.status(405).json({message: 'Metodo no permitido'})
     }
-    const {email, password} = req.body;
-    if(!email || !password ){
-        res.status(400).json({ message: 'Faltan campos requeridos' });
-        return;
-    }
-    try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: '1h' });
-
-    // Simulación de almacenamiento (en producción usarías una DB)
-    const usuario = {
-      email,
-      password: hashedPassword,
-      creado: new Date().toISOString()
-    };
-
-    res.status(201).json({
-      message: 'Usuario registrado con éxito',
-      token,
-      usuario
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al registrar usuario', error });
-  }
-
 }
