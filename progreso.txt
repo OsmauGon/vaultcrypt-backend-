@@ -39,6 +39,14 @@ Le pedi a copilot para hacer el desarrollo del endpoint, pero no me convencio la
 Lo que se me ocurrio es que el id del usuario este cifrado dentro del token junto con el email del usuario. Esto plantea que debo modificar la funcion de login y register
 Para evitar complicaciones decidi que al hacer login o register el backend devuelva el token y el objeto usuario. Con esto solo pude dejar completo el POST de nuevaCuenta. falta probarlo
 
+## Dia 4 (19/11)
+Empezaremos el dia probando el endpoint de cuentas. La prueba con Postman ha funcionado perfectamente
+Seguiremoos con el GET de las cuentas. Como hicimos con POST tomaremos el codigo de GET de usuario.ts y lo adaptaremos
+He dicidio crear un middleware para verificar el token y usarlo en las solicitudes de post y GET  de la gestion de cuentas. Tambien lo usare cuando haya que modificar los datos del usaurio. Creare el archivo tokenverificator.ts dentro de la carpeta UTILS 
+He dajado operativos y probados el POST y GET de gestion de cuentas a traves de la verificacion por token
+
+##Falta hacer: editar el PUT de usuario.ts para que verifique por token
+
 
 
 ##LO QUE SIGUE:
@@ -48,8 +56,8 @@ Para evitar complicaciones decidi que al hacer login o register el backend devue
 - [x] GET /usuario: devolver datos del usuario autenticado
 - [x] PUT /usuario: permitir edición de datos personales
 🔏 Gestión de cuentas cifradas
-- [ ] POST /cuenta: guardar cuenta cifrada (usando clave derivada del JWT o passphrase)
-- [ ] GET /cuenta: devolver cuentas del usuario autenticado
+- [x] POST /cuenta: guardar cuenta cifrada (usando clave derivada del JWT o passphrase)
+- [x] GET /cuenta: devolver cuentas del usuario autenticado
 🧠 Seguridad y educación
 - [ ] Implementar cifrado con crypto de Node.js
 - [ ] Crear endpoint educativo (/api/educacion) que devuelva explicaciones sobre JWT, hashing y cifrado

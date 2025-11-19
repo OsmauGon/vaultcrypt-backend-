@@ -1,6 +1,6 @@
 export type Cuenta = {
     id?: number | string; //cambiar por number cuando la logica db este lista
-    userId: number;
+    userId: number | string; //cambiar por number cuando la logica db este lista
     userName: string;
     userEmail: string;
     serviceName: string;

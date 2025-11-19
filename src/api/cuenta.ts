@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { IncomingMessage, ServerResponse } from 'http';
 import { Cuenta } from '../types/accounts';
 import { v4 as uuidv4 } from 'uuid';
+import { verificarToken } from '../utils/tokenverificator';
 
 export interface VercelRequest extends IncomingMessage {
   body: any;
@@ -212,6 +213,10 @@ export default async function accountsHandler(req: VercelRequest, res: VercelRes
                 serviceType,
                 serviceDescription,
             } = req.body;
+            
+            const decoded = verificarToken(req.headers['authorization']) as { email: string };
+            if (!decoded) throw new Error('Token inválido');
+
             if(!userEmail || !userName || !serviceName || !servicePassword || !serviceUrl || !serviceDescription){
             res.status(400).json({message: 'Faltan campos requeridos'})
             return
@@ -238,29 +243,38 @@ export default async function accountsHandler(req: VercelRequest, res: VercelRes
         }
 
     }
-    /* else if(req.method === 'GET'){
-        const authHeader = req.headers['authorization'];
-        if(!authHeader || !authHeader.startsWith('Bearer ')){
-            res.status(401).json({message: 'Token no proporcionado'})
-            return
-        }
-        const token = authHeader.split(' ')[1]
-        try{
-            const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {email: string};
-            const usuario = usuariosSimualdos.find(u => u.email === decoded.email)
-            //aqui va la logica de base de datos
-            if(!usuario){
-                res.status(404).json({message: 'Usuario no encontrado'})
+     else if(req.method === 'GET'){
+        
+        try {
+            const decoded = verificarToken(req.headers['authorization']) as { email: string };
+            if (!decoded) {
+                console.log("errorcito")
+                throw new Error('Token inválido');
+            }
+
+
+            const { idDueño } = req.query;
+            console.log(idDueño)
+            if (!idDueño || typeof idDueño !== 'string') {
+                res.status(400).json({ message: 'Falta el parámetro idDueño' });
                 return;
             }
-            res.status(200).json({
-                message: 'Usuario autenticado',
-                email: usuario.email
-            })
+
+            const cuentasDelUsuario = cuentasSimualdas.filter(cuenta => cuenta.userId === Number(idDueño));
+            //use Number(idDueño) porque el numero obtenido de la url es un string y causa conflicto con los
+            //registros simulados, asumo que habra problema con el id UUID pero veremos mas adelante
+            if (cuentasDelUsuario.length === 0) {
+            res.status(200).json({ cuentas: [], message: `No se encontraron cuentas para este usuario${typeof idDueño}` });
+            return;
+            }
+
+            res.status(200).json({ cuentas: cuentasDelUsuario });
+            
+
         } catch (error){
-            res.status(401).json({message: 'Token invalido o expirado'})
+            res.status(401).json({message: 'Token invalido o expirado', error})
         }
-    } */
+    } 
     /* else if(req.method === 'PUT'){
         const authHeader = req.headers['authorization'];
         if(!authHeader || !authHeader.startsWith('Bearer ')){
