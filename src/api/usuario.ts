@@ -31,7 +31,7 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
         const hashedPassword = await bcrypt.hash(password,18);
         const token = jwt.sign({email},process.env.JWT_SECRET!,{expiresIn: '1h'})
         const usuario = {email, password: hashedPassword}
-        //falta la logica de guardar en base de datos
+        //falta la logica de verificar existencia en base  en base de datos
         res.status(201).json({
             message: 'Usuario registrado con exito',
             token,

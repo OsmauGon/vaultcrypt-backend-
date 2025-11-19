@@ -30,7 +30,14 @@ Lo que sigue es la primer subida a github para eso ejecutamos git init en la con
 Hoy vamos a trabajar en el endpoint del login, ya tenemos el endpoint de resgistro en usuario.ts. Empezaremos creadon el archivo login.ts dentro de la carpeta API.
 Declaramos la funcion handlerPostLogin para verificar el logueo de un usuario y lo dejamos operativo y probado por Postman
 Al empezar a trabajar con el endpoint GET de usuarios la IA sugirio extender la funcion del archicos usuario.ts, por lo que le hare las siguientes modificaciones: cambiare el nombre a usersHandler y metera la logica del registro de usuario dentro de un IF que verifique el metodo de la solicitud y use ELSE IF para las otras dos (GET y PUT) de esta manera unificara las funciones POST, GET y PUT en el archivo usuario.ts
+Hemos dejado creados las 3 funciones recien mencionada dejando mensajes del lugar donde va la logica de base de datos
 
+## Dia 3 (18/11)
+Hoy vamos a trabajar los endpoints de relacionados a la gestion de cuentas, principalmente desarrollaremos el GET y el POST
+Primero vamos a ir a la carpeta TYPES para crear el tipado de cuentas
+Le pedi a copilot para hacer el desarrollo del endpoint, pero no me convencio la respuesta. Asique tome la use el POST de usuario.ts y lo adapte para funcionar con cuentas. Me tope con el problmea de que necesito obtener el id del usuario desde el frontend para ponerlo como userId de la nueva cuenta
+Lo que se me ocurrio es que el id del usuario este cifrado dentro del token junto con el email del usuario. Esto plantea que debo modificar la funcion de login y register
+Para evitar complicaciones decidi que al hacer login o register el backend devuelva el token y el objeto usuario. Con esto solo pude dejar completo el POST de nuevaCuenta. falta probarlo
 
 
 
@@ -38,8 +45,8 @@ Al empezar a trabajar con el endpoint GET de usuarios la IA sugirio extender la 
 🔐 Autenticación y usuarios
 - [x] POST /usuario: registro con hash y JWT
 - [x] POST /login: validación de credenciales y emisión de JWT
-- [ ] GET /usuario: devolver datos del usuario autenticado
-- [ ] PUT /usuario: permitir edición de datos personales
+- [x] GET /usuario: devolver datos del usuario autenticado
+- [x] PUT /usuario: permitir edición de datos personales
 🔏 Gestión de cuentas cifradas
 - [ ] POST /cuenta: guardar cuenta cifrada (usando clave derivada del JWT o passphrase)
 - [ ] GET /cuenta: devolver cuentas del usuario autenticado
@@ -54,3 +61,4 @@ Al empezar a trabajar con el endpoint GET de usuarios la IA sugirio extender la 
 
 Aun falta:
 -En la funcion handlerPost del archivo usaurio.ts adaptar la funcion para uqe reviba la palabra secreta y el nombre del usuario
+-cuando hagamos la lógica de base de datos es necesario que obtengamos el objeto usuario de la misma para devolverlo junto con el token en login y register

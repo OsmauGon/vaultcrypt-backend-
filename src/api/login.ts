@@ -35,6 +35,7 @@ export default async function loginHandler(req :VercelRequest, res :VercelRespon
     res.status(200).json({
         message: 'Inicio de sesion exitoso',
         token
+        //falta que devuelva el objeto usuario
     })
 
 
