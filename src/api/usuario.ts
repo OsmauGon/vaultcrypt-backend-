@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { IncomingMessage, ServerResponse } from 'http';
 import { Usuario } from '../types/user';
+import { verificarToken } from '../utils/tokenverificator';
 
 export interface VercelRequest extends IncomingMessage {
   body: any;
@@ -16,9 +17,14 @@ export interface VercelResponse extends ServerResponse {
 
 //Simulacion de base de datos en memoria:
 const usuariosSimualdos :Usuario[] = [
-    {
-        email: 'oscar@vaultcrypt.com',
+    {   
+        id: 1,
+        name: "Mauricio",
+        emailPrincipal: 'oscar@vaultcrypt.com',
+        emailList: ['oscar@vaultcrypt.com'],
         password: '$2b$10$HX03FC8uOTu1K8s9Ge1dfetfLvIflGWiQ26DtZrOn/tfnQK7ibvSq', // reemplazar con hash real
+        role: 'user',
+        secretWord: "palabraSecreta"
     }
 ];
 export default async function usersHandler(req: VercelRequest, res: VercelResponse){
@@ -47,7 +53,7 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
         const token = authHeader.split(' ')[1]
         try{
             const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {email: string};
-            const usuario = usuariosSimualdos.find(u => u.email === decoded.email)
+            const usuario = usuariosSimualdos.find(u => u.emailPrincipal === decoded.email)
             //aqui va la logica de base de datos
             if(!usuario){
                 res.status(404).json({message: 'Usuario no encontrado'})
@@ -55,7 +61,7 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
             }
             res.status(200).json({
                 message: 'Usuario autenticado',
-                email: usuario.email
+                email: usuario.emailPrincipal
             })
         } catch (error){
             res.status(401).json({message: 'Token invalido o expirado'})
@@ -69,8 +75,9 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
         }
         const token = authHeader.split(' ')[1]
         try{
-            const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { email: string };
-            const index = usuariosSimualdos.findIndex(u => u.email === decoded.email)
+            const decoded = verificarToken(req.headers['authorization']) as { email: string };
+            if (!decoded) throw new Error('Token inválido');
+            const index = usuariosSimualdos.findIndex(u => u.emailPrincipal === decoded.email)
             if(index === -1){
                 res.status(404).json({message: 'Usuario no encontrado'})
                 return
@@ -81,7 +88,7 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
                 return
             }
             //aqui va la logica para editar registros de la base de datos
-            if(nuevoEmail) usuariosSimualdos[index].email = nuevoEmail
+            if(nuevoEmail) usuariosSimualdos[index].emailPrincipal = nuevoEmail
             if(nuevaPassword){
                 const hashed = await bcrypt.hash(nuevaPassword, 18)
                 usuariosSimualdos[index].password = hashed

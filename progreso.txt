@@ -46,7 +46,11 @@ He dicidio crear un middleware para verificar el token y usarlo en las solicitud
 He dajado operativos y probados el POST y GET de gestion de cuentas a traves de la verificacion por token
 
 ##Falta hacer: editar el PUT de usuario.ts para que verifique por token
-
+Dia 5 (20/11)
+Para hoy quiero dejarr todo listo para trabajar en la implementacion de la logica de base de datos. Para esto debo dejar los objeto usuario y cuenta acordes al front-end.
+Empezaremos con el objeto Usuario le agregue name, emailPrincipal, emailList, role y secretWord
+El objeto accounts desde un principio lo construi del modo en lo que lo quiero
+Ya actualice el PUT para usar la funcion del archivo tokenverificator.ts y antes de terminar el dia actualizare el objeto Account o Cuenta del front-end
 
 
 ##LO QUE SIGUE:
@@ -58,15 +62,57 @@ He dajado operativos y probados el POST y GET de gestion de cuentas a traves de 
 🔏 Gestión de cuentas cifradas
 - [x] POST /cuenta: guardar cuenta cifrada (usando clave derivada del JWT o passphrase)
 - [x] GET /cuenta: devolver cuentas del usuario autenticado
-🧠 Seguridad y educación
-- [ ] Implementar cifrado con crypto de Node.js
-- [ ] Crear endpoint educativo (/api/educacion) que devuelva explicaciones sobre JWT, hashing y cifrado
-- [ ] Agregar mensajes emocionales en las respuestas del backend para reforzar UX educativa
-🚀 Infraestructura
-- [ ] Configurar despliegue en Vercel con vercel.json
-- [ ] Simular almacenamiento (in-memory o archivo temporal) para testeo
-- [ ] Preparar integración con front-end
+
+ 3. Adaptación de objetos al frontend
+[ ]-Objetivo: Asegurar que los objetos usuario y cuenta que devuelve el backend coincidan con lo que espera el frontend.
+[ ]-Acciones:
+[ ]-Revisar qué campos necesita el frontend (ej. id, email, nombre, serviceName, etc.)
+[ ]-Eliminar campos innecesarios o sensibles (password, bcrypt, etc.)
+[ ]-Estandarizar nombres (userId vs idDueño, servicePassword vs passwordEncriptada)
+🔹 4. Migración a lógica de base de datos
+[ ]-Objetivo: Reemplazar usuariosSimulados y cuentasSimuladas por persistencia real.
+[ ]-Acciones:
+[ ]-Elegir tecnología (ej. Prisma + SQLite/PostgreSQL o Mongoose + MongoDB)
+[ ]-Crear modelos Usuario y Cuenta
+[ ]-Reescribir los endpoints para usar findUnique, create, findMany, etc.
+[ ]-Validar relaciones: cada cuenta debe tener un userId que exista
+🔹 5. Despliegue en Vercel
+[ ]-Objetivo: Publicar VaultCrypt para pruebas reales y feedback.
+[ ]-Acciones:
+[ ]-Subir el repo a GitHub
+[ ]-Conectar Vercel al repo
+[ ]-Configurar variables de entorno (JWT_SECRET, etc.)
+[ ]-Probar endpoints desde Postman y desde el frontend en producción
+
+🧠 Bonus para la versión 3
+Cuando estés listo para escalar, podés agregar:
+- PUT y DELETE para cuentas
+- Roles de usuario (admin, invitado, etc.)
+- Compartir cuentas entre usuarios
+- Historial de cambios o auditoría
+- Educación visual sobre cifrado y seguridad
+
 
 Aun falta:
 -En la funcion handlerPost del archivo usaurio.ts adaptar la funcion para uqe reviba la palabra secreta y el nombre del usuario
 -cuando hagamos la lógica de base de datos es necesario que obtengamos el objeto usuario de la misma para devolverlo junto con el token en login y register
+
+
+
+
+http://localhost:3000/api/login POST de usuario nuevo enviando un email y una contraseña
+http://localhost:3000/api/usuario POST de usuario nuevo enviando un email y una contraseña
+http://localhost:3000/api/usuario PUT de usaurio enviando un objeto usuario
+http://localhost:3000/api/usuario GET recibe el email del usuario logueado
+http://localhost:3000/api/cuentas?idDueño=N GET de cuentas donde N es el ID del usuario
+http://localhost:3000/api/cuentas POST de cuentas enviando 
+{
+    "userId": N,
+    "userName": "Nombre",
+    "userEmail": "email",
+    "serviceName": "servicio",
+    "serviceUrl": "https://www.servicio.com.ar",
+    "servicePassword": "contraseña/clave",
+    "serviceType": "Otros",
+    "serviceDescription": "balblablabklalbablbalbalbalbalablba"
+    }
