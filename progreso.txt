@@ -52,6 +52,23 @@ Empezaremos con el objeto Usuario le agregue name, emailPrincipal, emailList, ro
 El objeto accounts desde un principio lo construi del modo en lo que lo quiero
 Ya actualice el PUT para usar la funcion del archivo tokenverificator.ts y antes de terminar el dia actualizare el objeto Account o Cuenta del front-end
 
+## Dia 6(21/11) Crearemos y aplicaremos la logica de base de datos
+Las opsiones son PostgreSQL y MongoDB. Segun entiendo PostgreSQL es mas estricto con el tipado asique lo usaremos ya que va a la par con typescript y el OMR sera Prisma
+Primero definiremos los modelos de Usuario y Cuenta. Voy a crear la carpeta MODELS y dentro el archivo prismaModels.ts (probaablemente no lo use en el flujo del proyecto) que es donde voy a declarar los modelos. Ya que ambos tienen un campo de opsiones (Usuario tiene role y Cuenta tiene serviceType) a cada uno le haremos un enum para que prisma les asigne unicamente esos valores. Lo que sigue es ejecutar en la terminal un npm install prisma @prisma/client para instalar las dependencias de Prisma y luego lo ejecutare con npx prisma init
+Una vez iniciado prisma la url de base de datos que se creo en el archivo .env y lo dejaremos asi: DATABASE_URL="postgresql://mauricio:gonzalez@localhost:5432/vaultcrypt"
+Podemos ver que se creo la carpeta PRISMA y dentro el archivo shema.prisma y luego para quedarnos tranquilos ejecutamos el comando npx prisma validate que es propio de prisma y verifica que las relaciones y asignaciones esten correctas
+Lo que sigue es ejecutar npx prisma migrate dev --name init, esto crea las tablas en la base de datos segun el modelo y salto un problema: Can't reach database server at `localhost:5432`. Esto es porque la base de datos no esta levantada ni corriendo asique haremos lo siguiente: 
+ir a https://www.postgresql.org/download/ y descargar PostgreSQL para Windows. Instalamos PostgreSQL en la compu y declaramos como contraseña "gonzalez" y el puerto "5432"
+Una vez completada la instalacion modificamos la url del archivo .env y la dejamos como DATABASE_URL="postgresql://postgres:gonzalez@localhost:5432/vaultcrypt". Volvimos a ejecutar npx validate y como salio bien ahora pasamos a la migracion con npx prisma migrate dev --name init. Fue un exito asique ya estamos listos para generar el cliente de prisma
+El cliente de prisma es como la libreria que nos dara los metodos findMany, findUnique , etc...Vamos a crear la carpeta LIB dentron de SRC y dentro el archivo prisma.ts
+Volvi a encontrarme con una complicacion. en prisma.ts necesito importar PrismaClient de @prisma/client para poder  crear el nuevo cliente, y PrismaClient se subraya cmo error deiciendo que el modulo @prisma/client no lo exporta
+Tuve muchas idas y vueltas, pero por lo que pude entender @prisma/client se encuentra en la carpeta node_module y no exporta a PrismaClient. la ruta correcta es esta dentro de la carpeta GENERATED que se crea al ejecutar prisma generate. Deje el archivo prisma.ts correctamente armado pero el problema de ahora es que new PrismaClient() requiere de un argumento que no se cual es. Estoy usando la version 7 de prisma y las anteriores no solicitaban este argumento, asiqeu para mañana debo investigar que argumento debo pasarle a PrismaClient
+
+
+
+
+
+
 
 ##LO QUE SIGUE:
 🔐 Autenticación y usuarios
@@ -64,16 +81,16 @@ Ya actualice el PUT para usar la funcion del archivo tokenverificator.ts y antes
 - [x] GET /cuenta: devolver cuentas del usuario autenticado
 
  3. Adaptación de objetos al frontend
-[ ]-Objetivo: Asegurar que los objetos usuario y cuenta que devuelve el backend coincidan con lo que espera el frontend.
+[x]-Objetivo: Asegurar que los objetos usuario y cuenta que devuelve el backend coincidan con lo que espera el frontend.
 [ ]-Acciones:
-[ ]-Revisar qué campos necesita el frontend (ej. id, email, nombre, serviceName, etc.)
-[ ]-Eliminar campos innecesarios o sensibles (password, bcrypt, etc.)
-[ ]-Estandarizar nombres (userId vs idDueño, servicePassword vs passwordEncriptada)
+[x]-Revisar qué campos necesita el frontend (ej. id, email, nombre, serviceName, etc.)
+[x]-Eliminar campos innecesarios o sensibles (password, bcrypt, etc.)
+[x]-Estandarizar nombres (userId vs idDueño, servicePassword vs passwordEncriptada)
 🔹 4. Migración a lógica de base de datos
 [ ]-Objetivo: Reemplazar usuariosSimulados y cuentasSimuladas por persistencia real.
 [ ]-Acciones:
-[ ]-Elegir tecnología (ej. Prisma + SQLite/PostgreSQL o Mongoose + MongoDB)
-[ ]-Crear modelos Usuario y Cuenta
+[x]-Elegir tecnología (ej. Prisma + SQLite/PostgreSQL o Mongoose + MongoDB)
+[x]-Crear modelos Usuario y Cuenta
 [ ]-Reescribir los endpoints para usar findUnique, create, findMany, etc.
 [ ]-Validar relaciones: cada cuenta debe tener un userId que exista
 🔹 5. Despliegue en Vercel

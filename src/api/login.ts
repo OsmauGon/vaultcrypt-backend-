@@ -7,7 +7,12 @@ import { Usuario } from "../types/user";
 //Simulacion de base de datos en memoria:
 const usuariosSimualdos :Usuario[] = [
     {
-        email: 'oscar@vaultcrypt.com',
+        id: 1,
+        name: "mauri",
+        emailList: [],
+        role: 'admin',
+        secretWord: "hola",
+        emailPrincipal: 'oscar@vaultcrypt.com',
         password: '$2b$10$HX03FC8uOTu1K8s9Ge1dfetfLvIflGWiQ26DtZrOn/tfnQK7ibvSq', // reemplazar con hash real
     }
 ];
@@ -23,7 +28,7 @@ export default async function loginHandler(req :VercelRequest, res :VercelRespon
         return
     }
     
-    const usuario = usuariosSimualdos.find(u => u.email === email)
+    const usuario = usuariosSimualdos.find(u => u.emailPrincipal === email)
     if(!usuario){
         return res.status(401).json({message: 'Error en las credenciales'})
     }

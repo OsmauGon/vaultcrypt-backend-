@@ -228,7 +228,7 @@ export default async function accountsHandler(req: VercelRequest, res: VercelRes
                             id: uuidv4(), // genera un ID único//borrar cuando la logica DB este
                             userId: userId,
                             userName: userName,
-                            userEmail: userEmail,
+                            userEmail: await bcrypt.hash(userEmail, 18),
                             serviceName: serviceName,
                             serviceUrl: serviceUrl,
                             servicePassword: await bcrypt.hash(servicePassword, 18),
