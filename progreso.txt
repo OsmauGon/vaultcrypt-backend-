@@ -64,8 +64,13 @@ El cliente de prisma es como la libreria que nos dara los metodos findMany, find
 Volvi a encontrarme con una complicacion. en prisma.ts necesito importar PrismaClient de @prisma/client para poder  crear el nuevo cliente, y PrismaClient se subraya cmo error deiciendo que el modulo @prisma/client no lo exporta
 Tuve muchas idas y vueltas, pero por lo que pude entender @prisma/client se encuentra en la carpeta node_module y no exporta a PrismaClient. la ruta correcta es esta dentro de la carpeta GENERATED que se crea al ejecutar prisma generate. Deje el archivo prisma.ts correctamente armado pero el problema de ahora es que new PrismaClient() requiere de un argumento que no se cual es. Estoy usando la version 7 de prisma y las anteriores no solicitaban este argumento, asiqeu para mañana debo investigar que argumento debo pasarle a PrismaClient
 
-
-
+##Dia 7(24/11)Estuve haciendo cosas con chatGPT para lograr hacer que prisma funcione
+En schema.prisma, en el objeto generator client cambie el valor del provider a "prisma-client-js" (antes no tenia el -js) y borre output que señalaba el lugar para crear la carpeta GENERATED
+Con eso al ejecutar npx prisma generate se creo en node_modules @prisma lo cual permite exportar PrismaClient
+Tambien en schema.prisma en el objeto datasource db agregue url = env("DATABASE_URL"), que al parecer estaba faltando generando problema
+Al realizar estos cambios ya debia poder levantarse prisma con trankilidad pero me tope con un detalle tecnico: Prisma tiene problemas cuando la carpetaq ue aloja al proyecto esta esta configurado para subirse a la nube. Como la carpeta del proyecto se aloja en C:/usuario/escritorio Windows lo tiene marcado como para subirlo siempre a la nube. Cuando trabaje con la inmobiliaria me maneje con docker o desde el pendrive. Opte por crear la carpeta PROYECTOS DEV, y dentro la carpeta VAULTCRYPT para copiar y pegar ahi la carpeta backend del proyecto.
+Finalmente luego de unas idas y vueltas mas modifique package.json para levantar el proyecto haciendo npm run dev
+Ahora prisma se levanta sin errores y parece que test.ts estaria funcionando correctamente. Pero hay que seguir con mas pruebas del funcionamiento
 
 
 

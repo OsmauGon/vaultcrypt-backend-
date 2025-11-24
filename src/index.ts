@@ -6,7 +6,6 @@ import accountsHandler from './api/cuenta';
 import { prismatest } from './api/test';
 
 dotenv.config();
-
 const app = express();
 app.use(express.json());
 
@@ -18,7 +17,7 @@ app.post('/api/login', loginHandler);
 app.post('/api/cuentas',accountsHandler)
 app.get('/api/cuentas',accountsHandler)
 
-app.post('/test',prismatest)
+app.post('/api/test',prismatest)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
