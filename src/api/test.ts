@@ -5,8 +5,8 @@ import prisma from "../lib/prisma";
 // Endpoint POST para crear un usuario
 
 export const prismatest = async (req :Request, res :Response) => {
-  res.json({ok: true})
-  /* try {
+  //res.json({ok: true})
+  try {
     const { name, email } = req.body;
     const nuevoUsuario = await prisma.test.create({
         data: {
@@ -18,5 +18,5 @@ export const prismatest = async (req :Request, res :Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al crear usuario" });
-  } */
+  } 
 }

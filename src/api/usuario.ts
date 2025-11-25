@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { IncomingMessage, ServerResponse } from 'http';
 import { Usuario } from '../types/user';
 import { verificarToken } from '../utils/tokenverificator';
+import prisma from '../lib/prisma';
 
 export interface VercelRequest extends IncomingMessage {
   body: any;
@@ -29,20 +30,36 @@ const usuariosSimualdos :Usuario[] = [
 ];
 export default async function usersHandler(req: VercelRequest, res: VercelResponse){
     if(req.method === 'POST'){
-        const {email, password} = req.body;
-        if(!email || !password){
+        const {name,emailPrincipal, password, secretWord} = req.body;
+        if(!emailPrincipal || !password || !secretWord || !name){
             res.status(400).json({message: 'Faltan campos requeridos'})
             return
         }
         const hashedPassword = await bcrypt.hash(password,18);
-        const token = jwt.sign({email},process.env.JWT_SECRET!,{expiresIn: '1h'})
-        const usuario = {email, password: hashedPassword}
+        const hashedSecretword = await bcrypt.hash(password,18);
+        const token = jwt.sign({emailPrincipal},process.env.JWT_SECRET!,{expiresIn: '1h'})
+        //const usuario  = {emailPrincipal, password: hashedPassword}
         //falta la logica de verificar existencia en base  en base de datos
-        res.status(201).json({
-            message: 'Usuario registrado con exito',
-            token,
-            usuario
-        })
+        try {
+                const nuevoUsuario = await prisma.usuario.create({
+                data: {
+                    name,
+                    emailPrincipal, 
+                    emailList: [emailPrincipal],
+                    password: hashedPassword,
+                    role: 'user',
+                    secretWord: hashedSecretword
+                }
+            })
+                res.status(201).json({
+                message: 'Usuario registrado con exito',
+                token,
+                nuevoUsuario
+            })
+        } catch (error) {
+            res.status(500).json({message: "Ha ocurrido un error en el registro: ", error})
+        }
+        
     }
     else if(req.method === 'GET'){
         const authHeader = req.headers['authorization'];

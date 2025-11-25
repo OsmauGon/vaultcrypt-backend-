@@ -72,6 +72,23 @@ Al realizar estos cambios ya debia poder levantarse prisma con trankilidad pero 
 Finalmente luego de unas idas y vueltas mas modifique package.json para levantar el proyecto haciendo npm run dev
 Ahora prisma se levanta sin errores y parece que test.ts estaria funcionando correctamente. Pero hay que seguir con mas pruebas del funcionamiento
 
+##Dia 8(25/11) Pruebas de los endopoints
+Hoy quiero probar el correcto funciamiento de los endpoints y la base de datos. Para esto primero probe el endpoint test.ts y funciono bien. Incluso abri la aplcacion table plus para verificar que la base de datos se cargara
+Ahora probare registrar usuarios. Primero la solicitud POST, hice los cambios correspondientes y mande por Postman el usuario numero 1:
+{
+    "name": "Oscar",
+    "emailPrincipal": "oscar@vaultcrypt.com",
+    "password": "claveSegura12345",
+    "secretWord": "gonzalez"
+}
+Ha sido un exito, solo que olvide tambien hashear la palabra secreta, hare la modificacion y enviare al usuario numero 2:
+{
+    "name": "Mauricio",
+    "emailPrincipal": "mauricio@vaultcrypt.com",
+    "password": "contraseña12345",
+    "secretWord": "galacho"
+}
+Excelente, el post de nuevos usuarios funciona a la perfeccion.
 
 
 

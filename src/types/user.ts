@@ -1,9 +1,9 @@
 export type Usuario=  {
-  id: number;
+  id?: number;
   name: string;
   emailPrincipal: string;
-  emailList: string[];
+  emailList?: string[];
   password: string;
-  role: 'user' | 'admin' | 'visit';
+  role?: 'user' | 'admin' | 'visit';
   secretWord: string;
 }
