@@ -2,6 +2,8 @@ import { VercelRequest, VercelResponse } from "../types/vercel";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { Usuario } from "../types/user";
+import prisma from "../lib/prisma";
+import { deriveSecretWord } from "../utils/swmannager";
 
 
 //Simulacion de base de datos en memoria:
@@ -22,26 +24,48 @@ export default async function loginHandler(req :VercelRequest, res :VercelRespon
         res.status(405).json({message: 'Metodo no permitido'})
         return
     }
-    const {email, password} = req.body;
-    if(!email || !password){
+    const {emailPrincipal, password} = req.body;
+    if(!emailPrincipal || !password){
         res.status(400).json({message: 'Faltan campos requeridos'})
         return
     }
     
-    const usuario = usuariosSimualdos.find(u => u.emailPrincipal === email)
-    if(!usuario){
-        return res.status(401).json({message: 'Error en las credenciales'})
+    try {
+    // Buscar usuario por emailPrincipal
+    const usuario = await prisma.usuario.findUnique({
+      where: { emailPrincipal },
+    });
+
+    if (!usuario) {
+      return res.status(401).json({ error: "Credenciales inválidas" });
     }
-    const isValid = await bcrypt.compare(password, usuario?.password)
-    if(!isValid){
-        res.status(401).json({message: "Contraseña incorrecta"})
+
+    // Verificar contraseña
+    const passwordValida = await bcrypt.compare(password, usuario.password);
+    if (!passwordValida) {
+      return res.status(401).json({ error: "Contraseña invalida" });
     }
-    const token = await jwt.sign({email}, process.env.JWT_SECRET!, {expiresIn : '1h'})
+
+    // Generar JWT
+    const token = jwt.sign({emailPrincipal},process.env.JWT_SECRET!,{expiresIn: '1h'})
+
+    // Respuesta
     res.status(200).json({
-        message: 'Inicio de sesion exitoso',
-        token
-        //falta que devuelva el objeto usuario
+                    message: 'Usuario autenticado',
+                    token,
+                    datosDEusurario: {
+                        id: usuario.id,
+                        name: usuario.name,
+                        emailList: usuario.emailList,
+                        secretWord: deriveSecretWord(usuario.secretWord, 12),
+                        role: usuario.role,
+    
+                    }
     })
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+
 
 
 

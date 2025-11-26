@@ -128,11 +128,11 @@ el GET funciono bien y vamos a probar el PUT con:
 {
     "name": "Will Turner",
     "emailPrincipal": "will@vaultcrypt.com",
+    "password": "flayingdutchman",
     "emailList" : ["bootstrap@gmail.com","bill@gmail.com"],
-    "password": "flayingdutchman"
 }
 La prueba resulto excelente.
-Ahora vamos a seguir con el POST de login
+Ahora vamos a seguir con el POST de login. hicimos los cambios correspondientes y probamos los 4 usuarios creado cons Postman. Todo resulto perfecto
 
 ##LO QUE SIGUE:
 🔐 Autenticación y usuarios

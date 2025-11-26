@@ -126,11 +126,7 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
             }
             const {emailPrincipal: nuevoEmail, password: nuevaPassword, emailList :listaActualizada, name: nuevoName} = req.body;
             if(!nuevoEmail || !nuevaPassword || !nuevoName || !listaActualizada){
-
-                console.log(nuevoName)
-                console.log(nuevoEmail)
-                console.log(nuevaPassword)
-                console.log(listaActualizada)
+                
                 res.status(400).json({message: 'No se proporcionaron datos para actualizar'})
                 return
             }
