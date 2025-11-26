@@ -89,7 +89,21 @@ Ha sido un exito, solo que olvide tambien hashear la palabra secreta, hare la mo
     "secretWord": "galacho"
 }
 Excelente, el post de nuevos usuarios funciona a la perfeccion.
-
+Comence a trabajar en la solicitud GET, es una funcion para obtener a partir del token al usuario actual. El problema con el que me encontre es que al devolver el usaruario actual, la secretWord regresa con el segundo encriptado, haciendola inutil para el front-end. Mis dos opsiones son generar el token a partir del email y la secretWord o dejar la secretWord con la encriptacion del front-end
+Lo he hablado con Copilot y llegamos al acuerdo de usar siguiente sistema: 
+1_el frontend al momento del registro envia name, emailPrincipal, secretWord y password
+2_el backend hashea secretWord y password (El hasheo es irreversible) y lo almacena juntocon las otras credenciasles en la base de datos
+3_cuando el frontend solicite un login o un GET de usaurio le daremos la hashed secretWord derivada (version mas corta) para que haga el trabajo de encriptacion y desencriptacion correspondientes
+4_ccuando el frontend tenga que encriptar o desencriptar no usara estrictamente la palabra secreta que proporciono el registro sin la hashed secretWord derivada que llamaremos cryptoWord. De esta manera la base de datos alamacenara la secretWord pero no sera util para encriptar o desencriptar
+Este sistema es apto poruqe aun no trabajo en la solicitud GET del usuario ni en el login. Para el hashe se usara la libreria bcrypt y para el derivado se usara la libreria crypto
+Estoy haciendo las pruebas con la solicitud GET y como el token habra expirado registre al tercer usuario: 
+{
+    "name": "Jack",
+    "emailPrincipal": "jack@vaultcrypt.com",
+    "password": "blackpearl",
+    "secretWord": "ron"
+}
+Creo que deberia seguir probando porque la secretWord que queda luego de hashear y derivar es de 64 caracteres, pero lo dejare para mañana
 
 
 ##LO QUE SIGUE:
