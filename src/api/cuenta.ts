@@ -4,6 +4,8 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { Cuenta } from '../types/accounts';
 import { v4 as uuidv4 } from 'uuid';
 import { verificarToken } from '../utils/tokenverificator';
+import prisma from '../lib/prisma';
+import { decrypt, encrypt } from '../utils/encyptMannager';
 
 export interface VercelRequest extends IncomingMessage {
   body: any;
@@ -201,7 +203,7 @@ const cuentasSimualdas :Cuenta[] = [
 ];
 
 export default async function accountsHandler(req: VercelRequest, res: VercelResponse){
-    if(req.method === 'POST'){
+    if(req.method === 'POST'){//listo
         try{
             const { 
                 userId,
@@ -222,59 +224,101 @@ export default async function accountsHandler(req: VercelRequest, res: VercelRes
             return
             }
 
-
-            //aqui va la logica para editar registros de la base de datos
-            const nuevaCuenta = {
-                            id: uuidv4(), // genera un ID único//borrar cuando la logica DB este
-                            userId: userId,
-                            userName: userName,
-                            userEmail: await bcrypt.hash(userEmail, 18),
-                            serviceName: serviceName,
-                            serviceUrl: serviceUrl,
-                            servicePassword: await bcrypt.hash(servicePassword, 18),
-                            serviceType: serviceType,
-                            serviceDescription: serviceDescription,
-                            created: new Date().toISOString()//borrar cuando la logica DB este
-                        }
-            cuentasSimualdas.push(nuevaCuenta)//reemplazar por await prisma.create()
-            res.status(200).json({message: 'Cuenta creada con exito', cuenta: nuevaCuenta})
+           const nuevaCuenta = await prisma.cuenta.create({
+            data: {
+                userId,
+                userName,
+                userEmail: encrypt(userEmail),
+                serviceName,
+                serviceUrl,
+                servicePassword: encrypt(servicePassword),
+                serviceType,
+                serviceDescription: encrypt(serviceDescription),
+                            
+            }
+           })
+            
+            
+            
+            
+            res.status(200).json({message: 'Cuenta creada con exito', cuenta: nuevaCuenta.id})
         } catch (error: any) {
             res.status(500).json({ message: 'Error interno al crear la cuenta', error: error.message });
         }
 
     }
-     else if(req.method === 'GET'){
+    else if(req.method === 'GET'){
         
-        try {
-            const decoded = verificarToken(req.headers['authorization']) as { email: string };
-            if (!decoded) {
-                console.log("errorcito")
-                throw new Error('Token inválido');
-            }
-
-
-            const { idDueño } = req.query;
-            console.log(idDueño)
-            if (!idDueño || typeof idDueño !== 'string') {
-                res.status(400).json({ message: 'Falta el parámetro idDueño' });
-                return;
-            }
-
-            const cuentasDelUsuario = cuentasSimualdas.filter(cuenta => cuenta.userId === Number(idDueño));
-            //use Number(idDueño) porque el numero obtenido de la url es un string y causa conflicto con los
-            //registros simulados, asumo que habra problema con el id UUID pero veremos mas adelante
-            if (cuentasDelUsuario.length === 0) {
-            res.status(200).json({ cuentas: [], message: `No se encontraron cuentas para este usuario${typeof idDueño}` });
-            return;
-            }
-
-            res.status(200).json({ cuentas: cuentasDelUsuario });
-            
-
-        } catch (error){
-            res.status(401).json({message: 'Token invalido o expirado', error})
+        const token = req.headers.authorization?.split(" ")[1];
+        if (!token) {
+        return res.status(401).json({ error: "Token no proporcionado" });
         }
-    } 
+
+        try {
+            jwt.verify(token, process.env.JWT_SECRET!);
+        } catch (error: any) {
+        return res.status(401).json({ error: "Token inválido o expirado" });
+        }
+
+        // En Vercel el parámetro dinámico viene en query
+        const { idDueño } = req.query;
+        if (!idDueño) {
+            return res.status(400).json({ error: "idDueño requerido" });
+            }
+
+        const cuentas = await prisma.cuenta.findMany({
+            where: { userId: Number(idDueño) },
+            });
+
+        if (!cuentas || cuentas.length === 0) {
+            return res.status(404).json({ error: "No se encontraron cuentas" });
+        }
+
+        const cuentasDesencriptadas = cuentas.map((c) => ({
+            ...c,
+            userEmail: decrypt(c.userEmail),
+            servicePassword: decrypt(c.servicePassword),
+            serviceDescription: decrypt(c.serviceDescription),
+            }));
+
+        return res.status(200).json(cuentasDesencriptadas);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /* else if(req.method === 'PUT'){
         const authHeader = req.headers['authorization'];
         if(!authHeader || !authHeader.startsWith('Bearer ')){

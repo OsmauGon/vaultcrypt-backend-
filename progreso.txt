@@ -133,6 +133,66 @@ el GET funciono bien y vamos a probar el PUT con:
 }
 La prueba resulto excelente.
 Ahora vamos a seguir con el POST de login. hicimos los cambios correspondientes y probamos los 4 usuarios creado cons Postman. Todo resulto perfecto
+Para seguir haremos pruebas de primero un login del primer usuario: {"email":"oscar@vaultcrypt.com","password": "claveSegura12345"}. Luego haremos un PUT para modificarle todo los campos: {"name": "OscarMau","emailPrincipal": "oscar@vaultcrypt.com","emailList": ["email1@gmail.com","email2@gmail.com"],"password": "contraseña1"}. Luego volvemos a hacer una solicitud login del usuario 2 para obtener el token del mismo: {"emailPrincipal": "mauricio@vaultcrypt.com","password": "contraseña12345"} y luego hacer un GET para obtener todos los datos de ese usuario. Como todas las pruebas salieron correctas seguimos con los endpoints de cuenta.ts
+Empezando a trabajar con el POST de una cuenta nueva encontre mi primer conflicto: los datos mas sensibles del objeto Cuenta son userEmail, servicePassword y serviceDescription y al haber entendido que el hasheo es irreversible entonces deseo mantener mi postura de una doble encriptación va a ser necesario encriptarlos de una manera reversible. Para esto voy a crear el archivo encryptMannage.ts dentro de la carpeta UTILS y va a contener las funciones que encrypten y desencripten los datos sensibles de un objeto Cuenta usando la libreria crypto-js. Ya he completado las modificaciones de la funcion accountHandler en POST  y GET. Pasemos a probar con postman. Primero hare 10 POST de cuentas, pero la primero cuenta va a ser:
+{
+    "userId":"1",
+    "userName":"Oscar",
+    "userEmail": " prueba@gmail.com",
+    "serviceName": "Prueba",
+    "serviceUrl": "https://www.prueba.com",
+    "servicePassword": "Pass1234!",
+    "serviceType":"Otros",
+    "serviceDescription": " Cuenta personal de prueba",
+}
+Ambas pruebas fueron exitosas
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##LO QUE SIGUE:
 🔐 Autenticación y usuarios
@@ -184,6 +244,7 @@ DEVILIDADES O COSAS QUE NO SON COMO PENSE:
 
 -la secretWord del usuario no es la que brinda al registrarse y nunca puede ser cambiada
 -la verificacion por token que usan algunas solicitudes deberia ser un middleware para ahorrar codigo
+-con el token correcto cualquier usuario podria obtener los registros del usuario que mande en el endpoin, el GET de cuenta.ts deberia comparar el id el usuario logueado con el del enviado en el endpoint
 
 
 http://localhost:3000/api/login POST de usuario nuevo enviando un email y una contraseña
