@@ -105,6 +105,34 @@ Estoy haciendo las pruebas con la solicitud GET y como el token habra expirado r
 }
 Creo que deberia seguir probando porque la secretWord que queda luego de hashear y derivar es de 64 caracteres, pero lo dejare para mañana
 
+##Dia 9(26/11) Hoy quero terminar con todos los endpoints de una vez
+Para resumir no dar vueltas vamos manejar la palabra secreta de la siguente manera: 
+const user = { id, secretWord: "miClaveSuperSecreta" };
+
+    // Derivar hash SHA-256
+    const fullHashBuffer = crypto.createHash("sha256")
+      .update(user.secretWord)
+      .digest();
+
+    // Convertir a Base64 y truncar a 12 caracteres
+    const shortKey = fullHashBuffer.toString("base64").slice(0, 12);
+Esto haya que cuando se haga la solicitud GET el servidor tome la palabra secreta hasheada en la base de datos, la derive con crypto y devuelva solo los primeros 12 caracteres. De esta manera la palabra secreta queda completamente desconocida para el backend y el front-end, mientras que el usuario ve una encriptacion con una secretWord automatica generada al momento de registrarse. Para ahorrar codigo creare el archivo swmannager.ts en la carpeta UTILS y declarare la funcion que toma el hashed secretWord y la devuelve como la recivira el usuario
+Pasemos al PUT de usuarios, sera parecido al register, primero verificara por token al usuario, luego tomara name, emailPrincipal, emailList y password para actualizar el registro del usuario en la base de datos segun  se obtenga de un findUnique. Ya reemplazamos la logica de modificar usuariosSimulados asiqeu probaremos con Postman creando un nuevo usuario:
+{
+    "name": "William",
+    "emailPrincipal": "turner@vaultcrypt.com",
+    "password": "flayingdutchman",
+    "secretWord": "will"
+} 
+el GET funciono bien y vamos a probar el PUT con:
+{
+    "name": "Will Turner",
+    "emailPrincipal": "will@vaultcrypt.com",
+    "emailList" : ["bootstrap@gmail.com","bill@gmail.com"],
+    "password": "flayingdutchman"
+}
+La prueba resulto excelente.
+Ahora vamos a seguir con el POST de login
 
 ##LO QUE SIGUE:
 🔐 Autenticación y usuarios
@@ -149,8 +177,13 @@ Cuando estés listo para escalar, podés agregar:
 Aun falta:
 -En la funcion handlerPost del archivo usaurio.ts adaptar la funcion para uqe reviba la palabra secreta y el nombre del usuario
 -cuando hagamos la lógica de base de datos es necesario que obtengamos el objeto usuario de la misma para devolverlo junto con el token en login y register
+-recordar el tema de la palabra secreta: no es modificable y no es exactamente la que el usuario brinda al registrarse
 
 
+DEVILIDADES O COSAS QUE NO SON COMO PENSE:
+
+-la secretWord del usuario no es la que brinda al registrarse y nunca puede ser cambiada
+-la verificacion por token que usan algunas solicitudes deberia ser un middleware para ahorrar codigo
 
 
 http://localhost:3000/api/login POST de usuario nuevo enviando un email y una contraseña

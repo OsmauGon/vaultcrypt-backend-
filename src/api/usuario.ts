@@ -5,6 +5,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { Usuario } from '../types/user';
 import { verificarToken } from '../utils/tokenverificator';
 import prisma from '../lib/prisma';
+import { deriveSecretWord } from '../utils/swmannager';
 
 export interface VercelRequest extends IncomingMessage {
   body: any;
@@ -89,12 +90,13 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
                     id: user.id,
                     name: user.name,
                     emailList: user.emailList,
-                    secretWord: crypto.createHash("sha256").update(user.secretWord).digest("hex"),
+                    secretWord: deriveSecretWord(user.secretWord, 12),
                     role: user.role,
 
                 }
             })
         } catch (error :any){
+            //Como no se recomienda usar ANY, lo ideal es poner aqui un middleware para manejar los posibles errores
             if (error.name === "TokenExpiredError") {
             return res.status(401).json({ error: "Token expirado" });
             }
@@ -112,29 +114,52 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
             return
         }
         const token = authHeader.split(' ')[1]
+        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        const {name, emailPrincipal, emailList, password} = req.body
         try{
-            const decoded = verificarToken(req.headers['authorization']) as { email: string };
+            const decoded = verificarToken(req.headers['authorization']) as { emailPrincipal: string };
             if (!decoded) throw new Error('Token inválido');
-            const index = usuariosSimualdos.findIndex(u => u.emailPrincipal === decoded.email)
-            if(index === -1){
+            const user = await prisma.usuario.findUnique({ where: { emailPrincipal: decoded.emailPrincipal } })
+            if(!user){
                 res.status(404).json({message: 'Usuario no encontrado'})
                 return
             }
-            const {email: nuevoEmail, password: nuevaPassword} = req.body;
-            if(!nuevoEmail && !nuevaPassword){
+            const {emailPrincipal: nuevoEmail, password: nuevaPassword, emailList :listaActualizada, name: nuevoName} = req.body;
+            if(!nuevoEmail || !nuevaPassword || !nuevoName || !listaActualizada){
+
+                console.log(nuevoName)
+                console.log(nuevoEmail)
+                console.log(nuevaPassword)
+                console.log(listaActualizada)
                 res.status(400).json({message: 'No se proporcionaron datos para actualizar'})
                 return
             }
-            //aqui va la logica para editar registros de la base de datos
-            if(nuevoEmail) usuariosSimualdos[index].emailPrincipal = nuevoEmail
-            if(nuevaPassword){
-                const hashed = await bcrypt.hash(nuevaPassword, 18)
-                usuariosSimualdos[index].password = hashed
-            }
+            //aqui va la logica para editar registros de la base de datos3
+
+            const usuarioActualizado = await prisma.usuario.update({
+                where: { id: Number(user.id) },
+                data: {
+                    ...user,
+                    name : nuevoName,
+                    emailPrincipal : nuevoEmail,
+                    emailList : listaActualizada,
+                    password: await bcrypt.hash(nuevaPassword, 10),
+                    
+                },
+                });
+
+
             res.status(200).json({message: 'Usuario actualizado con exito'})
 
-        } catch {
-            res.status(401).json({ message: 'Token inválido o expirado' });
+        } catch (error :any){
+            //Como no se recomienda usar ANY, lo ideal es poner aqui un middleware para manejar los posibles errores
+            if (error.name === "TokenExpiredError") {
+            return res.status(401).json({ error: "Token expirado" });
+            }
+            if (error.name === "JsonWebTokenError") {
+            return res.status(401).json({ error: "Token inválido" });
+            }
+            return res.status(500).json({ message: "Error: ",error });
         }
     }
     else {
