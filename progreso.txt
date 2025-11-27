@@ -148,6 +148,19 @@ Empezando a trabajar con el POST de una cuenta nueva encontre mi primer conflict
 Ambas pruebas fueron exitosas
 
 
+##Dia 10(27/11) Hoy debo subir el backend a vercel
+Empece el dia revizando los puntos faltantes. El primero quedo obsoleto asiqeuue lo borre. El segundo que dice: "cuando se aplique la logica db, asegurarse de devolver el objeto usuario en login y register". Habiamos acordado que el login y GET de usuario no devuelven el objeto usuario completo asque quedo pendiente modificar el register para que envie las partes necesarias del objeto usuario (id, name, emailList, role y secretWord hasehada y derivada). Ahora el POST de usuario.ts al salir existoso devuelve un mensaje de exito, el token y el objeto user. Porbamos con postman usando el sigueinte usuario:
+{
+    "name": "Hector",
+    "emailPrincipal": "hbarbossa@vaultcrypt.com",
+    "password": "queenannarevenge",
+    "secretWord": "treasure"
+    }
+La prueba fue exitosa
+En la carpeta UTILS decidi crear el archivo authMiddleware.ts que exporta una funcion que verifica si el id del usuario obtenido del email obtenido del token, corresponde al idDueño enviado en la url del GET. Esto espara sanar mi preocupacion de uqe cualquier usuario con un token valido reciba las cuentas de cualquier otro usuario al logueado
+Por conflictos de tipado reemplace los VercelRequest y VercerResponse por Request y Response de express.
+
+
 
 
 
@@ -215,8 +228,8 @@ Ambas pruebas fueron exitosas
 [ ]-Acciones:
 [x]-Elegir tecnología (ej. Prisma + SQLite/PostgreSQL o Mongoose + MongoDB)
 [x]-Crear modelos Usuario y Cuenta
-[ ]-Reescribir los endpoints para usar findUnique, create, findMany, etc.
-[ ]-Validar relaciones: cada cuenta debe tener un userId que exista
+[x]-Reescribir los endpoints para usar findUnique, create, findMany, etc.
+[x]-Validar relaciones: cada cuenta debe tener un userId que exista
 🔹 5. Despliegue en Vercel
 [ ]-Objetivo: Publicar VaultCrypt para pruebas reales y feedback.
 [ ]-Acciones:
@@ -235,8 +248,7 @@ Cuando estés listo para escalar, podés agregar:
 
 
 Aun falta:
--En la funcion handlerPost del archivo usaurio.ts adaptar la funcion para uqe reviba la palabra secreta y el nombre del usuario
--cuando hagamos la lógica de base de datos es necesario que obtengamos el objeto usuario de la misma para devolverlo junto con el token en login y register
+
 -recordar el tema de la palabra secreta: no es modificable y no es exactamente la que el usuario brinda al registrarse
 
 

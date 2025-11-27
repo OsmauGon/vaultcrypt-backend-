@@ -6,17 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { verificarToken } from '../utils/tokenverificator';
 import prisma from '../lib/prisma';
 import { decrypt, encrypt } from '../utils/encyptMannager';
-
-export interface VercelRequest extends IncomingMessage {
-  body: any;
-  query: { [key: string]: string | string[] };
-  cookies: { [key: string]: string };
-}
-
-export interface VercelResponse extends ServerResponse {
-  status: (code: number) => VercelResponse;
-  json: (body: any) => void;
-}
+import { authMiddleware } from '../utils/authMiddleware';
+import {Request, Response} from 'express'
 
 //Simulacion de base de datos en memoria:
 const cuentasSimualdas :Cuenta[] = [
@@ -202,7 +193,7 @@ const cuentasSimualdas :Cuenta[] = [
     }
 ];
 
-export default async function accountsHandler(req: VercelRequest, res: VercelResponse){
+export default async function accountsHandler(req: Request, res: Response){
     if(req.method === 'POST'){//listo
         try{
             const { 
@@ -248,7 +239,11 @@ export default async function accountsHandler(req: VercelRequest, res: VercelRes
 
     }
     else if(req.method === 'GET'){
-        
+        //Aqui vamos a poner el middleware authMiddleware
+        await new Promise((resolve, reject) =>
+            authMiddleware(req, res, (err?: any) => (err ? reject(err) : resolve(null)))
+        );
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         const token = req.headers.authorization?.split(" ")[1];
         if (!token) {
         return res.status(401).json({ error: "Token no proporcionado" });
@@ -257,7 +252,7 @@ export default async function accountsHandler(req: VercelRequest, res: VercelRes
         try {
             jwt.verify(token, process.env.JWT_SECRET!);
         } catch (error: any) {
-        return res.status(401).json({ error: "Token inválido o expirado" });
+        return res.status(401).json({ error: "Token inválido o expirado desde cuentas" });
         }
 
         // En Vercel el parámetro dinámico viene en query

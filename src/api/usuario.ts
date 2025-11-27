@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
+import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken'
 import { IncomingMessage, ServerResponse } from 'http';
 import { Usuario } from '../types/user';
@@ -30,7 +31,7 @@ const usuariosSimualdos :Usuario[] = [
         secretWord: "palabraSecreta"
     }
 ];
-export default async function usersHandler(req: VercelRequest, res: VercelResponse){
+export default async function usersHandler(req: Request, res: Response){
     if(req.method === 'POST'){//LISTO!!
         const {name,emailPrincipal, password, secretWord} = req.body;
         if(!emailPrincipal || !password || !secretWord || !name){
@@ -56,14 +57,21 @@ export default async function usersHandler(req: VercelRequest, res: VercelRespon
                 res.status(201).json({
                 message: 'Usuario registrado con exito',
                 token,
-                nuevoUsuario
+                user: {
+                    id:nuevoUsuario.id,
+                    name: nuevoUsuario.name,
+                    emailList: nuevoUsuario.emailList,
+                    role: nuevoUsuario.role,
+                    secretWord: deriveSecretWord(hashedSecretword)
+
+                }
             })
         } catch (error) {
             res.status(500).json({message: "Ha ocurrido un error en el registro: ", error})
         }
         
     }
-    else if(req.method === 'GET'){
+    else if(req.method === 'GET'){//LISTO!!
         //esta funcion es para devolver al propio usuario mediante el token
         const authHeader = req.headers['authorization'];
         if(!authHeader || !authHeader.startsWith('Bearer ')){

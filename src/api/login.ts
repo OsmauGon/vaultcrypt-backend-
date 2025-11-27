@@ -1,4 +1,5 @@
-import { VercelRequest, VercelResponse } from "../types/vercel";
+
+import { Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { Usuario } from "../types/user";
@@ -19,7 +20,7 @@ const usuariosSimualdos :Usuario[] = [
     }
 ];
 
-export default async function loginHandler(req :VercelRequest, res :VercelResponse){
+export default async function loginHandler(req :Request, res :Response){
     if(req.method !== 'POST'){
         res.status(405).json({message: 'Metodo no permitido'})
         return
