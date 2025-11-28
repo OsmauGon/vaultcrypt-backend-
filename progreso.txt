@@ -212,6 +212,19 @@ Primero instalare las cors y las configurare en index.ts. en origin dejare el lo
 Lo que sigue es la definicion de la base de datos. Esto es paara que la base de datos se aloje en un lugar y este disponible para se accedida por el backend. Ingresare a neon.com para registrarme con mi GitHub. Ya cree el proyecto y ahora debo instalar el CLI de neom con npm install -g neonctl para disponer de comando de configuracion de neon. Lo que sigue es ejecutar npx neon init
 El despliegue se hizo correctamente, pero hay errores hacen que se crashee la pagina que estoy tratando de localizar. El primero es que en "script" del package.json no esta la linea "postinstall": "prisma generate" - Esto asegura que Vercel genere el Prisma Client al instalar dependencias, evitando el crash típico de Cannot find module '.prisma/client'..
 Otro error importante que genera crasheo es que en index.ts: falta que agregamos export default (req: VercelRequest, res: VercelResponse) => {app(req, res);}; para que Vercel pueda invocar tu Express app como función serverless.
+Seguimos con problemas, esta vez no con el deploying, pero si con construccion de la app. Vercel se queja de que no pudo instalar tus dependencias. Esto suele deberse a problemas en el package.json o en las dependencias mismas.
+Al pasarle casi todo el codigo de package.json a copilot me ha dado las siguiente instrucciones: 
+
+-el paquete crypto de npm es obsoleto y suele romper builds.
+👉 Solución: eliminá "crypto": "^1.0.1" de dependencies
+-estás usando . La versión 5 todavía está en beta y puede dar problemas en entornos serverless.
+👉 Solución: bajá a la versión estable 4.x haciendo npm install express@4
+-vercel usa Node 18 por defecto. Si querés Node 20 (como pusiste en tu vercel.json)
+👉 Solución: tenés que declararlo en package.json: agregar en package.json "engines":{"node":"20.x"}
+- en Vercel, los devDependencies también se instalan, pero es más seguro mover Prisma a dependencies porque se usa en runtime para generar el cliente.
+👉 Solución: mover "prisma" a dependencies
+
+UNA VEZ hecho eso debo borrar node_modules y package-lock.json y volver a ejecutar npm install
 
 
 
