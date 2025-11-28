@@ -7,19 +7,6 @@ import prisma from "../lib/prisma";
 import { deriveSecretWord } from "../utils/swmannager";
 
 
-//Simulacion de base de datos en memoria:
-const usuariosSimualdos :Usuario[] = [
-    {
-        id: 1,
-        name: "mauri",
-        emailList: [],
-        role: 'admin',
-        secretWord: "hola",
-        emailPrincipal: 'oscar@vaultcrypt.com',
-        password: '$2b$10$HX03FC8uOTu1K8s9Ge1dfetfLvIflGWiQ26DtZrOn/tfnQK7ibvSq', // reemplazar con hash real
-    }
-];
-
 export default async function loginHandler(req :Request, res :Response){
     if(req.method !== 'POST'){
         res.status(405).json({message: 'Metodo no permitido'})

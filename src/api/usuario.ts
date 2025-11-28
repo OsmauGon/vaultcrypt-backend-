@@ -1,36 +1,11 @@
 import bcrypt from 'bcrypt'
-import crypto from 'crypto'
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken'
-import { IncomingMessage, ServerResponse } from 'http';
-import { Usuario } from '../types/user';
 import { verificarToken } from '../utils/tokenverificator';
 import prisma from '../lib/prisma';
 import { deriveSecretWord } from '../utils/swmannager';
 
-export interface VercelRequest extends IncomingMessage {
-  body: any;
-  query: { [key: string]: string | string[] };
-  cookies: { [key: string]: string };
-}
 
-export interface VercelResponse extends ServerResponse {
-  status: (code: number) => VercelResponse;
-  json: (body: any) => void;
-}
-
-//Simulacion de base de datos en memoria:
-const usuariosSimualdos :Usuario[] = [
-    {   
-        id: 1,
-        name: "Mauricio",
-        emailPrincipal: 'oscar@vaultcrypt.com',
-        emailList: ['oscar@vaultcrypt.com'],
-        password: '$2b$10$HX03FC8uOTu1K8s9Ge1dfetfLvIflGWiQ26DtZrOn/tfnQK7ibvSq', // reemplazar con hash real
-        role: 'user',
-        secretWord: "palabraSecreta"
-    }
-];
 export default async function usersHandler(req: Request, res: Response){
     if(req.method === 'POST'){//LISTO!!
         const {name,emailPrincipal, password, secretWord} = req.body;
