@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import usersHandler from './api/usuario';
 import loginHandler from './api/login';
 import accountsHandler from './api/cuenta';
-import { prismatest } from './api/test';
 
 dotenv.config();
 const app = express();
@@ -17,9 +16,9 @@ app.post('/api/login', loginHandler);
 app.post('/api/cuentas',accountsHandler)
 app.get('/api/cuentas',accountsHandler)
 
-app.post('/api/test',prismatest)
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+/* app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+Descomentar cuando estemos probando localmente. Desplegar app.listen en vercel denerara problemas
+*/

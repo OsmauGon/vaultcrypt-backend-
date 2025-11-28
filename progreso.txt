@@ -159,6 +159,45 @@ Empece el dia revizando los puntos faltantes. El primero quedo obsoleto asiqeuue
 La prueba fue exitosa
 En la carpeta UTILS decidi crear el archivo authMiddleware.ts que exporta una funcion que verifica si el id del usuario obtenido del email obtenido del token, corresponde al idDueño enviado en la url del GET. Esto espara sanar mi preocupacion de uqe cualquier usuario con un token valido reciba las cuentas de cualquier otro usuario al logueado
 Por conflictos de tipado reemplace los VercelRequest y VercerResponse por Request y Response de express.
+En pos de hacer los prepararivos en vercel haremos algunas modificaciones:
+-en index.ts debemos comentar el app.listen ya que generara problemas al momento del deploy
+-en vercel.json teniamos el objeto {"functions": {"api/**/*.ts": {"runtime": "nodejs20.x"}}}. Este vercel.json que me pasaste está configurando el runtime de las funciones en api/**/*.ts a Node.js 20, lo cual es correcto si tu backend estuviera dividido en múltiples archivos dentro de /api.
+Pero como vos tenemos un servidor Express centralizado en index.ts, lo ideal es ajustar el vercel.json para que todas las rutas apunten a ese archivo. De lo contrario, Vercel va a esperar funciones sueltas en /api y no va a invocar tu index.ts. asique el codigo uqe va en vercel.json es:
+{
+  "version": 2,
+  "builds": [
+    { "src": "index.ts", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "index.ts" }
+  ],
+  "functions": {
+    "index.ts": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}
+Ya tenemos la estructura del proyecto y el vercel.json listo. El siguiente paso hacia el despliegue es preparar el entorno de Vercel y subir tu código:
+
+Paso 2: Configurar entorno en Vercel
+- Subir el repo a GitHub
+- Asegurate de que tu index.ts, vercel.json, package.json y tsconfig.json estén en la raíz del proyecto.
+- Incluí tu .gitignore para no subir node_modules ni .env.
+- Importar el proyecto en Vercel
+- Entrá a vercel.com.
+- Clic en New Project → seleccioná tu repo.
+- Framework: elegí Other (porque usás Express).
+- Configurar variables de entorno
+- En Project Settings → Environment Variables, agregá:
+- JWT_SECRET → tu clave secreta.
+- DATABASE_URL → la cadena de conexión de Prisma.
+- ENCRYPT_SECRET (si tu cifrado lo requiere).
+- Definí valores tanto para Production como para Preview.
+- Build & Output
+- Vercel va a ejecutar vercel-build (que definiste como tsc) para compilar tu TypeScript.
+- El resultado será tu index.js en dist/ (o directamente compilado por Vercel).
+- Gracias al vercel.json, todas las rutas se redirigen a tu index.ts.
+
 
 
 
