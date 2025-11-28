@@ -210,6 +210,9 @@ He decidido dejar por hoy y posponer el deploy, aun no estamos listos para el de
 ##Dia 11(28/11) segumos con el proceso de deploting
 Primero instalare las cors y las configurare en index.ts. en origin dejare el localhost 3000 para pruebas locales, dos endpooints genericos de servicios de despliegue y la url del front-end desplegado en Netlify
 Lo que sigue es la definicion de la base de datos. Esto es paara que la base de datos se aloje en un lugar y este disponible para se accedida por el backend. Ingresare a neon.com para registrarme con mi GitHub. Ya cree el proyecto y ahora debo instalar el CLI de neom con npm install -g neonctl para disponer de comando de configuracion de neon. Lo que sigue es ejecutar npx neon init
+El despliegue se hizo correctamente, pero hay errores hacen que se crashee la pagina que estoy tratando de localizar. El primero es que en "script" del package.json no esta la linea "postinstall": "prisma generate" - Esto asegura que Vercel genere el Prisma Client al instalar dependencias, evitando el crash típico de Cannot find module '.prisma/client'..
+Otro error importante que genera crasheo es que en index.ts: falta que agregamos export default (req: VercelRequest, res: VercelResponse) => {app(req, res);}; para que Vercel pueda invocar tu Express app como función serverless.
+
 
 
 

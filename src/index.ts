@@ -4,6 +4,7 @@ import usersHandler from './api/usuario';
 import loginHandler from './api/login';
 import accountsHandler from './api/cuenta';
 import cors from 'cors'
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 dotenv.config();
 const app = express();
@@ -29,9 +30,15 @@ app.post('/api/login', loginHandler);
 app.post('/api/cuentas',accountsHandler)
 app.get('/api/cuentas',accountsHandler)
 
+
+/*
 const PORT = process.env.PORT || 3000;
-/* app.listen(PORT, () => {
+ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 Descomentar cuando estemos probando localmente. Desplegar app.listen en vercel denerara problemas
 */
+// 🚀 Exportar como handler para Vercel
+export default (req: VercelRequest, res: VercelResponse) => {
+  app(req, res);
+};
