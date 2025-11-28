@@ -269,7 +269,7 @@ export default async function accountsHandler(req: Request, res: Response){
             return res.status(404).json({ error: "No se encontraron cuentas" });
         }
 
-        const cuentasDesencriptadas = cuentas.map((c) => ({
+        const cuentasDesencriptadas = cuentas.map((c: Cuenta) => ({
             ...c,
             userEmail: decrypt(c.userEmail),
             servicePassword: decrypt(c.servicePassword),
