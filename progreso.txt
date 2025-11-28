@@ -27,6 +27,7 @@ Salto el primer error. Primero que nada nos falto desarrollar en index.ts la con
 Lo que sigue es la primer subida a github para eso ejecutamos git init en la consola del VScode y creamos el archivo .gitignore que debe enlistar a node_module, .env y a dist/
 
 ## Dia 2 (17/11)
+
 Hoy vamos a trabajar en el endpoint del login, ya tenemos el endpoint de resgistro en usuario.ts. Empezaremos creadon el archivo login.ts dentro de la carpeta API.
 Declaramos la funcion handlerPostLogin para verificar el logueo de un usuario y lo dejamos operativo y probado por Postman
 Al empezar a trabajar con el endpoint GET de usuarios la IA sugirio extender la funcion del archicos usuario.ts, por lo que le hare las siguientes modificaciones: cambiare el nombre a usersHandler y metera la logica del registro de usuario dentro de un IF que verifique el metodo de la solicitud y use ELSE IF para las otras dos (GET y PUT) de esta manera unificara las funciones POST, GET y PUT en el archivo usuario.ts
@@ -197,6 +198,28 @@ Paso 2: Configurar entorno en Vercel
 - Vercel va a ejecutar vercel-build (que definiste como tsc) para compilar tu TypeScript.
 - El resultado será tu index.js en dist/ (o directamente compilado por Vercel).
 - Gracias al vercel.json, todas las rutas se redirigen a tu index.ts.
+-En vercel.json debemos asegurarnos que si algo usa index.ts, este puesto como src/index.ts para que vercel busque el archivo index.ts dentro de la carpeta SRC
+
+
+Ya en la pagina de Vercel importamos el repositorio de GitHub, donde nos pregunta el framework ponemos "Other". En las variables de entorno declaramos JWT_SECRET que usaremos el primer nombre de mi padre + secret (***secret) y en DATABASE_URL pondre postgresql://mauricio:gonzalez@host:5432/vaultcrypt?schema="public" pero se estan presentado dificultades. 
+He decidido dejar por hoy y posponer el deploy, aun no estamos listos para el deploy en vercel asique definire los siguientes objetivos y retomare mañana:
+- Etapa 1 (mañana): configurar CORS y definir la base de datos persistente (Neon o Supabase).
+- Etapa 2 (cierre de esta semana): hacer el deploy en Vercel y validar todas las funciones con Postman.
+- Etapa 3 (próxima semana): conectar tu frontend en Netlify con el backend en Vercel y dejar el proyecto funcionando de punta a punta.
+
+##Dia 11(28/11) segumos con el proceso de deploting
+Primero instalare las cors y las configurare en index.ts. en origin dejare el localhost 3000 para pruebas locales, dos endpooints genericos de servicios de despliegue y la url del front-end desplegado en Netlify
+Lo que sigue es la definicion de la base de datos. Esto es paara que la base de datos se aloje en un lugar y este disponible para se accedida por el backend. Ingresare a neon.com para registrarme con mi GitHub. Ya cree el proyecto y ahora debo instalar el CLI de neom con npm install -g neonctl para disponer de comando de configuracion de neon. Lo que sigue es ejecutar npx neon init
+
+
+
+PARA FUTUROS DESPLIEGUES:
+el flujo completo es:
+- verificacion de estructura del proyecto (archivos raices, carpetas y tipados)
+- Configurar base de datos persistente y probar migraciones.
+- Configurar CORS en tu backend.
+- Subir variables de entorno a Vercel.
+- Recién ahí hacer el deploy.
 
 
 

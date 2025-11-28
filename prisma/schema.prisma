@@ -1,34 +1,46 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
-}
-
-
-enum Role {
-  user
-  admin
-  visit
+  url      = env("DATABASE_URL")
 }
 
 model Usuario {
   id             Int      @id @default(autoincrement())
   name           String
   emailPrincipal String   @unique
-  emailList      String[] // soportado en PostgreSQL/MongoDB
+  emailList      String[]
   password       String
   role           Role
   secretWord     String
-  cuentas        Cuenta[] // relación uno-a-muchos
+  cuentas        Cuenta[]
+}
+
+model Cuenta {
+  id                 Int             @id @default(autoincrement())
+  userId             Int
+  userName           String
+  userEmail          String
+  serviceName        String
+  serviceUrl         String
+  servicePassword    String
+  serviceType        Clasificaciones
+  serviceDescription String
+  creadoEn           DateTime        @default(now())
+  usuario            Usuario         @relation(fields: [userId], references: [id])
+}
+
+model Test {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
+enum Role {
+  user
+  admin
+  visit
 }
 
 enum Clasificaciones {
@@ -40,22 +52,4 @@ enum Clasificaciones {
   AplicacionDEdispositivo
   BilleteraInversiones
   Otros
-}
-
-model Cuenta {
-  id                Int      @id @default(autoincrement())
-  userId            Int
-  usuario           Usuario  @relation(fields: [userId], references: [id])
-  userName          String   // opcional, redundante
-  userEmail         String   // opcional, redundante
-  serviceName       String
-  serviceUrl        String
-  servicePassword   String
-  serviceType       Clasificaciones
-  serviceDescription String
-  creadoEn          DateTime @default(now())
-}
-model Test {
-  id   Int    @id @default(autoincrement())
-  name String
 }

@@ -3,10 +3,23 @@ import dotenv from 'dotenv';
 import usersHandler from './api/usuario';
 import loginHandler from './api/login';
 import accountsHandler from './api/cuenta';
+import cors from 'cors'
 
 dotenv.config();
 const app = express();
 app.use(express.json());
+
+//configuracion de CORS
+app.use(cors({
+  origin:[//dominios permitidos
+    "http://localhost:3000",
+    "https://vaultcrypt.vercel.app",//dominio generico de un despliegue en vercel
+    "https://vaultcrypt.netlify.app",//dominio generico de un despliegue en netlify
+    "https://vaultcrypt.netlify.app",//aqui desplegue el front-end
+      ],//dominios permitidos
+  methods:["GET","POST","PUT","DELETE"],
+  credentials: true //si usas cookies o auth headers
+}))
 
 app.post('/api/usuario', usersHandler);
 app.get('/api/usuario',usersHandler)
