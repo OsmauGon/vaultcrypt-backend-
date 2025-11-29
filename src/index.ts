@@ -36,7 +36,7 @@ const PORT = process.env.PORT || 3000;
  app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
-Descomentar cuando estemos probando localmente. Desplegar app.listen en vercel denerara problemas
+//Descomentar cuando estemos probando localmente. Desplegar app.listen en vercel denerara problemas
 */
 // 🚀 Exportar como handler para Vercel
 export default (req: VercelRequest, res: VercelResponse) => {
