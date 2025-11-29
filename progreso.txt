@@ -225,7 +225,7 @@ Al pasarle casi todo el codigo de package.json a copilot me ha dado las siguient
 👉 Solución: mover "prisma" a dependencies
 
 UNA VEZ hecho eso debo borrar node_modules y package-lock.json y volver a ejecutar npm install
-
+Tuve mas problemas con prisma y su condenada version 7 asiqe optamos por bajar a otra vercion con el comando npm install prisma@5.14.0 @prisma/client@5.14.0 y ahora debo volver a ejecutar npx prisma generate
 
 
 
