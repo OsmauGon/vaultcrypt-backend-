@@ -226,7 +226,8 @@ Al pasarle casi todo el codigo de package.json a copilot me ha dado las siguient
 
 UNA VEZ hecho eso debo borrar node_modules y package-lock.json y volver a ejecutar npm install
 Tuve mas problemas con prisma y su condenada version 7 asiqe optamos por bajar a otra vercion con el comando npm install prisma@5.14.0 @prisma/client@5.14.0 y ahora debo volver a ejecutar npx prisma generate
-
+Finalmente el deploy funciono bien y la pagina del dominio no tiene errores (creo). Lo qie sigue es probar con Postman ingresando un nuevo usuario
+Falle al crear un nuevo usuario, pero el error viene de la mano de la base de datos y su alojamiento (neon). Copilot decie que el url de las variables de entorno puestas en vercel deben incluir ?sslmode=require asique la modifique y quedo asi "postgresql://postgres:gonzalez@localhost:5432/vaultcrypt?sslmode=require"
 
 
 PARA FUTUROS DESPLIEGUES:
