@@ -5,6 +5,7 @@ import loginHandler from './api/login';
 import accountsHandler from './api/cuenta';
 import cors from 'cors'
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { prismatest } from './api/test';
 
 dotenv.config();
 const app = express();
@@ -29,6 +30,8 @@ app.post('/api/login', loginHandler);
 
 app.post('/api/cuentas',accountsHandler)
 app.get('/api/cuentas',accountsHandler)
+
+app.post('/api/test',prismatest)
 
 
 /*
