@@ -228,7 +228,18 @@ UNA VEZ hecho eso debo borrar node_modules y package-lock.json y volver a ejecut
 Tuve mas problemas con prisma y su condenada version 7 asiqe optamos por bajar a otra vercion con el comando npm install prisma@5.14.0 @prisma/client@5.14.0 y ahora debo volver a ejecutar npx prisma generate
 Finalmente el deploy funciono bien y la pagina del dominio no tiene errores (creo). Lo qie sigue es probar con Postman ingresando un nuevo usuario
 Falle al crear un nuevo usuario, pero el error viene de la mano de la base de datos y su alojamiento (neon). Copilot decie que el url de las variables de entorno puestas en vercel deben incluir ?sslmode=require asique la modifique y quedo asi "postgresql://postgres:gonzalez@localhost:5432/vaultcrypt?sslmode=require"
+Si bien el backend esta subido y funcionando, ninguna de mis pruebas de registrar un usuario han funcionado. Pero tengo la pista de que el problema es que prisma no puede alcazar la base de datos segun el puerto (o algo asi). Mañana segiremos tratando
 
+
+Dia 12(1/12) Seguimos trabajando en el deploying
+Empece el dia planteando mis pasos segun la pista que obtuve el ultimo dia: el problema viene de que no podemos alcanzar la base de daton en Neon. Encontre que el proyecto esta subido correctamente y dividido en dos ramas: deployment y production. Cada uno tiene su propia connection string o url para conectarse y sus funcionalidades respectivamente son pruebas/desarrollo y servico activo. Con esto es facil deducir que el despliegue en vercel esta tratando de conectarce a una base de datos inexistent.
+Como han pasado unos dias Neon ha desabilitado o pausado ambas ramas para ahorrar recursos. asique las reeactive (no estoy seguro de como) y luego de hacerlo hice lo siguiente:
+- ejecute npx prisma migrate deploy: entonces se crearon las tablas
+- ejecute db pull : para probar la coneccion local con le base en Neon y salio bien. 
+- ejectute prisma generate : para que mi cliente se adapte a la url especificada el schema.
+- en LIB/prisma.ts arme una funcion que solicita los registros de una tabla ni bien se levnate el backend 
+- Levante el backend usando npm run dev y se me mostro en consola el array vacio que significa qeu la tabla existe y funciona
+Dejare en .ENV las url para poder alternar entre la rama production y development y repeti el proceso para actualizar la base de datos de esta rama. Ya quedo bien porque levante el backend usando npm run dev y y se me mostro en consola el array vacio que significa qeu la tabla existe y funciona
 
 PARA FUTUROS DESPLIEGUES:
 el flujo completo es:

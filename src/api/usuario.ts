@@ -26,8 +26,7 @@ export default async function usersHandler(req: Request, res: Response){
                     emailList: [emailPrincipal],
                     password: hashedPassword,
                     role: 'user',
-                    secretWord: hashedSecretword,
-                    cuentas: []
+                    secretWord: hashedSecretword
                 }
             })
                 res.status(201).json({
