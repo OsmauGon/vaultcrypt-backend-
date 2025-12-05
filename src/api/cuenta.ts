@@ -4,7 +4,7 @@ import { Cuenta } from '../types/accounts';
 import { verificarToken } from '../utils/tokenverificator';
 import prisma from '../lib/prisma';
 import { decrypt, encrypt } from '../utils/encyptMannager';
-import { authMiddleware } from '../utils/authMiddleware';
+import { authMiddleware, verifyAndGetUser } from '../utils/authMiddleware';
 import {Request, Response} from 'express'
 
 
@@ -23,9 +23,15 @@ export default async function accountsHandler(req: Request, res: Response){
                 serviceDescription,
             } = req.body;
             
-            const decoded = verificarToken(req.headers['authorization']) as { email: string };
-            if (!decoded) throw new Error('Token inválido');
-
+            const authHeader = req.headers["authorization"];
+            if (!authHeader) {
+              return res.status(401).json({ error: "Token no enviado" });
+            }
+            const token = authHeader.split(" ")[1];
+            const { id, role } = await verifyAndGetUser(token);
+            if(id !== userId) {
+                res.status(403).json({message: "Recurso prohibido: Error en los IDs"})
+            }
             if(!userEmail || !userName || !serviceName || !servicePassword || !serviceUrl || !serviceDescription){
             res.status(400).json({message: 'Faltan campos requeridos'})
             return
@@ -49,87 +55,47 @@ export default async function accountsHandler(req: Request, res: Response){
             
             
             res.status(200).json({message: 'Cuenta creada con exito', cuenta: nuevaCuenta.id})
-        } catch (error: any) {
-            res.status(500).json({ message: 'Error interno al crear la cuenta', error: error.message });
+        } catch (error) {
+            res.status(500).json({ message: 'Error interno al crear la cuenta', error});
         }
 
     }
-    else if(req.method === 'GET'){
-        //Aqui vamos a poner el middleware authMiddleware
-        await new Promise((resolve, reject) =>
-            authMiddleware(req, res, (err?: any) => (err ? reject(err) : resolve(null)))
-        );
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        const token = req.headers.authorization?.split(" ")[1];
-        if (!token) {
-        return res.status(401).json({ error: "Token no proporcionado" });
-        }
-
-        try {
-            jwt.verify(token, process.env.JWT_SECRET!);
-        } catch (error: any) {
-        return res.status(401).json({ error: "Token inválido o expirado desde cuentas" });
-        }
-
-        // En Vercel el parámetro dinámico viene en query
+    else if(req.method === 'GET'){//listo
         const { idDueño } = req.query;
         if (!idDueño) {
             return res.status(400).json({ error: "idDueño requerido" });
             }
+        try {
+            const authHeader = req.headers["authorization"];
+            if (!authHeader) {
+              return res.status(401).json({ error: "Token no enviado" });
+            }
+            const token = authHeader.split(" ")[1];
+            const { id, role } = await verifyAndGetUser(token);
+            if(id !== Number(idDueño)) {
+                res.status(403).json({message: "Recurso prohibido: Error en los IDs"})
+            }
 
-        const cuentas = await prisma.cuenta.findMany({
-            where: { userId: Number(idDueño) },
-            });
 
-        if (!cuentas || cuentas.length === 0) {
-            return res.status(404).json({ error: "No se encontraron cuentas" });
+
+
+            
+            const cuentas = await prisma.cuenta.findMany({where: { userId: Number(idDueño) }});
+            if (!cuentas || cuentas.length === 0) {
+                return res.status(404).json({ error: "No se encontraron cuentas" });
+            }
+            const cuentasDesencriptadas = cuentas.map((c: Cuenta) => ({
+                ...c,
+                userEmail: decrypt(c.userEmail),
+                servicePassword: decrypt(c.servicePassword),
+                serviceDescription: decrypt(c.serviceDescription),
+                }));
+            return res.status(200).json(cuentasDesencriptadas);
+            }
+            catch(error){
+                res.status(500).json({message: "Ocurrio un error durante la obtencion de cuentas"})
+            }
         }
-
-        const cuentasDesencriptadas = cuentas.map((c: Cuenta) => ({
-            ...c,
-            userEmail: decrypt(c.userEmail),
-            servicePassword: decrypt(c.servicePassword),
-            serviceDescription: decrypt(c.serviceDescription),
-            }));
-
-        return res.status(200).json(cuentasDesencriptadas);
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /* else if(req.method === 'PUT'){
         const authHeader = req.headers['authorization'];
         if(!authHeader || !authHeader.startsWith('Bearer ')){

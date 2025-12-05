@@ -137,7 +137,7 @@ Ahora vamos a seguir con el POST de login. hicimos los cambios correspondientes 
 Para seguir haremos pruebas de primero un login del primer usuario: {"email":"oscar@vaultcrypt.com","password": "claveSegura12345"}. Luego haremos un PUT para modificarle todo los campos: {"name": "OscarMau","emailPrincipal": "oscar@vaultcrypt.com","emailList": ["email1@gmail.com","email2@gmail.com"],"password": "contraseña1"}. Luego volvemos a hacer una solicitud login del usuario 2 para obtener el token del mismo: {"emailPrincipal": "mauricio@vaultcrypt.com","password": "contraseña12345"} y luego hacer un GET para obtener todos los datos de ese usuario. Como todas las pruebas salieron correctas seguimos con los endpoints de cuenta.ts
 Empezando a trabajar con el POST de una cuenta nueva encontre mi primer conflicto: los datos mas sensibles del objeto Cuenta son userEmail, servicePassword y serviceDescription y al haber entendido que el hasheo es irreversible entonces deseo mantener mi postura de una doble encriptación va a ser necesario encriptarlos de una manera reversible. Para esto voy a crear el archivo encryptMannage.ts dentro de la carpeta UTILS y va a contener las funciones que encrypten y desencripten los datos sensibles de un objeto Cuenta usando la libreria crypto-js. Ya he completado las modificaciones de la funcion accountHandler en POST  y GET. Pasemos a probar con postman. Primero hare 10 POST de cuentas, pero la primero cuenta va a ser:
 {
-    "userId":"1",
+    "userId":1,
     "userName":"Oscar",
     "userEmail": " prueba@gmail.com",
     "serviceName": "Prueba",
@@ -241,6 +241,92 @@ Como han pasado unos dias Neon ha desabilitado o pausado ambas ramas para ahorra
 - Levante el backend usando npm run dev y se me mostro en consola el array vacio que significa qeu la tabla existe y funciona
 Dejare en .ENV las url para poder alternar entre la rama production y development y repeti el proceso para actualizar la base de datos de esta rama. Ya quedo bien porque levante el backend usando npm run dev y y se me mostro en consola el array vacio que significa qeu la tabla existe y funciona
 
+Ahora vamos a volver a actualizar el repositorio en github y hacer pruebas.
+La primera prueba con test.ts funciono bien
+La segunda prueba sera un post de usuario.ts con el siguiente usuario:
+{
+    "name": "Jack",
+    "emailPrincipal": "fake@sparrow.com",
+    "password": "clavedejack",
+    "secretWord": "ron"
+}
+Resultao bien asique generare mas usaurios:
+{
+    "name": "Will",
+    "emailPrincipal": "fake@turner.com",
+    "password": "clavedewill",
+    "secretWord": "armero"
+}
+{
+    "name": "Elizabeth",
+    "emailPrincipal": "fake@swan.com",
+    "password": "clavedeelizabeth",
+    "secretWord": "parley"
+}
+{
+    "name": "Hector",
+    "emailPrincipal": "fake@barbossa.com",
+    "password": "clavedehector",
+    "secretWord": "manzana"
+}
+Los registros de estos usuarios fueron exitosos. Para terminar vamos a cambiar la conection string de las viariables de entrno en Vercel para que se comunique con la rama de produccion. Esta vez registrare mi propio usuario verdadero:
+{
+  "name":"Mauricio",
+  "emailPrincipal": "mauricio7892@hotmail.com",
+  "password": "******",
+  "secretWord":"******"
+}
+la constraseña es la que uso de yugi y la palabra secreta es mi pokemon favorito
+Exito al registar!!!
+Registre al sesegundo usuario de la base de datos de la rama produccion:
+{
+  "name":"Armando",
+  "emailPrincipal": "esteban@quito.com",
+  "password": "prueba",
+  "secretWord":"prueba"
+}
+Lo que sigue es probar los demas endpoints. El siguiente es GET de usuario, este requiere unicamente el token para devolver al objeto usuario. Lo siguiente fue el login y finalmente el PUT
+Al probar el PUT de usaurio modificamos el usuario 2 con los siguiente datos:
+{
+"emailPrincipal": "nuevoEmail@gmail.com",
+"password": "nuevaPassword", 
+"emailList" :["listaActualizada@hotmail.com","listaActualizada@gmail.com"], 
+"name":"nuevoName"
+}
+Todos los endpoints de usuario funcionan de maravilla
+Pasemos ahora al POST de cuentas, esto lo hare con la cuenta siguiente cuenta ficticia:
+{
+    "userId":1,
+    "userName":"Oscar",
+    "userEmail": " prueba@gmail.com",
+    "serviceName": "Prueba",
+    "serviceUrl": "https://www.prueba.com",
+    "servicePassword": "Pass1234!",
+    "serviceType":"Otros",
+    "serviceDescription": " Cuenta personal de prueba"
+}
+He hecho 4 pruebas de registros y funcionaron perfectamente. Encontre una vulnerabilidad, si se envia un numero de idDueño distinto al del usuario que se esta creado el registro de cuenta no hay ninguna verificacion que el idDueño de la cuenta que se esta enviando sea la del registrado. Probe enviando idDueño inexistentes en la base de datos, lo que proboco que prisma reaccionara, pero envie el registro 4 con el idDueño 2 usando el token del usuario 1
+He completado las pruebas de GET y ´POST de cuentas. Todo funciona a la perfeccion
+
+##Dia 13(2/12) Hoy puliremos algunas debilidades y trabajaremos en la integracion del backend en el frontend
+De las 6 solicitudes qque manejamos 4 de ellas requieren una mejor verificacion de seguridad (GET y PUT de usuario, y GET y POST de cuentas) ya que solicitan el token del usuario y quisiera agregar que se obtenga el ID del mismo. Para esto habia diseñado un middleware en el archivo authMiddleware.ts y pienso adaptarlo para que verifique todo.
+Queiro adaptar esta middleware para que: 
+1_reciba del token el email, el id, y también el role del usuario. 
+2_ maneje los errores relacionados a la base de datos (usuario inexistente, base o tabla no disponible ) verificación del token (no enviado o expirado) y errores de variables de entorno.
+Finalmente si todo pasa bien devuelva un objeto con el id, y el role que se usaran paara mas verificaciones propias del endpint
+
+Objetivos de hoy:
+[]-desarrollar ultimateAuthMiddleware
+[]-actualizar los 4 endpoints que usaran ultimateAuthMiddleware
+[]-actualizar los 2 endpoints restantes
+
+#Dia 14(4/12) Backend listo
+He tenido subidas y bajas de insparcion y avances pero complete el verificador de ids para solicitudes que lo requieran y adapte los endpionts correspondientes para que detengan el proceso si ocurre algo sospechoso
+Cree la variable de entorno HASH_ROUNDS para unificar el numero de ronda a encriptar. Debo dejarla aplicada en Vercel para cuando suba esto a github
+Revise el desarrollo y borre los any mas usados.
+En Vercel voy a dejar activo la rama para desarrollo mientras hago las pruebas
+Ya esta todo listo para unir el front-end con el backend
+
 PARA FUTUROS DESPLIEGUES:
 el flujo completo es:
 - verificacion de estructura del proyecto (archivos raices, carpetas y tipados)
@@ -323,13 +409,14 @@ el flujo completo es:
 🔹 5. Despliegue en Vercel
 [ ]-Objetivo: Publicar VaultCrypt para pruebas reales y feedback.
 [ ]-Acciones:
-[ ]-Subir el repo a GitHub
-[ ]-Conectar Vercel al repo
-[ ]-Configurar variables de entorno (JWT_SECRET, etc.)
-[ ]-Probar endpoints desde Postman y desde el frontend en producción
+[x]-Subir el repo a GitHub
+[x]-Conectar Vercel al repo
+[x]-Configurar variables de entorno (JWT_SECRET, etc.)
+[x]-Probar endpoints desde Postman y desde el frontend en producción
 
 🧠 Bonus para la versión 3
 Cuando estés listo para escalar, podés agregar:
+- DELETE de usuarios
 - PUT y DELETE para cuentas
 - Roles de usuario (admin, invitado, etc.)
 - Compartir cuentas entre usuarios
@@ -345,9 +432,6 @@ Aun falta:
 DEVILIDADES O COSAS QUE NO SON COMO PENSE:
 
 -la secretWord del usuario no es la que brinda al registrarse y nunca puede ser cambiada
--la verificacion por token que usan algunas solicitudes deberia ser un middleware para ahorrar codigo
--con el token correcto cualquier usuario podria obtener los registros del usuario que mande en el endpoin, el GET de cuenta.ts deberia comparar el id el usuario logueado con el del enviado en el endpoint
-
 
 http://localhost:3000/api/login POST de usuario nuevo enviando un email y una contraseña
 http://localhost:3000/api/usuario POST de usuario nuevo enviando un email y una contraseña
@@ -365,3 +449,29 @@ http://localhost:3000/api/cuentas POST de cuentas enviando
     "serviceType": "Otros",
     "serviceDescription": "balblablabklalbablbalbalbalbalablba"
     }
+
+
+
+
+
+
+
+
+
+    POST https://maurix-bedmpvcc.vercel.app/api/login   enviando un {"emailPrincipal:"","password":""}
+    POST https://maurix-bedmpvcc.vercel.app/api/usuario enviando un {"name":"","emailPrincipal":"","password":"","secretWord":""}
+    GET  https://maurix-bedmpvcc.vercel.app/api/usuario enviando un token
+    PUT  https://maurix-bedmpvcc.vercel.app/api/usuario enviando un token y {"emailPrincipal": "", "password": "", "emailList" :["listaActualizada"], "name": "nuevoName"}
+
+    POST  https://maurix-bedmpvcc.vercel.app/api/cuentas enviando un token y
+    {
+    "userId":N,
+    "userName":"",
+    "userEmail": "",
+    "serviceName": "",
+    "serviceUrl": "",
+    "servicePassword": "",
+    "serviceType":"Otros",
+    "serviceDescription": ""
+}
+  GET https://maurix-bedmpvcc.vercel.app/api/cuentas?idDueño=N enviando un token y el id del usuario 
