@@ -7,7 +7,7 @@ import { deriveSecretWord } from '../utils/swmannager';
 import { verifyAndGetUser } from '../utils/authMiddleware';
 
 
-    const numeroSaltos = process.env.HASH_ROUNDS!
+    const numeroSaltos = parseInt(process.env.HASH_ROUNDS!)
 export default async function usersHandler(req: Request, res: Response){
     if(req.method === 'POST'){//LISTO!!
         const {name,emailPrincipal, password, secretWord} = req.body;
