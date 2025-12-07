@@ -15,6 +15,7 @@ app.use(express.json());
 app.use(cors({
   origin:[//dominios permitidos
     "http://localhost:3000",
+    "http://localhost:5173", //dominio generico del Vite
     "https://vaultcrypt.vercel.app",//dominio generico de un despliegue en vercel
     "https://vaultcrypt.netlify.app",//dominio generico de un despliegue en netlify
     "https://vaultcrypt.netlify.app",//aqui desplegue el front-end
