@@ -41,7 +41,7 @@ export default async function loginHandler(req :Request, res :Response){
     res.status(200).json({
                     message: 'Usuario autenticado',
                     token,
-                    datosDEusurario: {
+                    user: {
                         id: usuario.id,
                         name: usuario.name,
                         emailList: usuario.emailList,
