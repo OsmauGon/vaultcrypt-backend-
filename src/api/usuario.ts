@@ -106,9 +106,9 @@ export default async function usersHandler(req: Request, res: Response){
                 data: {
                     ...user,
                     name : nuevoName,
-                    emailPrincipal : nuevoEmail,
+                    emailPrincipal : nuevoEmail === 'elmismo' ? user.emailPrincipal : nuevoEmail,
                     emailList : listaActualizada,
-                    password: await bcrypt.hash(nuevaPassword, numeroSaltos),
+                    password: nuevaPassword === "lamisma" ? user.password : await bcrypt.hash(nuevaPassword, numeroSaltos),
                     
                 },
                 });
