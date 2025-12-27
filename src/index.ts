@@ -6,6 +6,7 @@ import accountsHandler from './api/cuenta';
 import cors from 'cors'
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { prismatest } from './api/test';
+import { adminorder } from './api/admin';
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,7 @@ app.use(cors({
   credentials: true //si usas cookies o auth headers
 }))
 
+//app.post('/api/usuario', userRegister);
 app.post('/api/usuario', usersHandler);
 app.get('/api/usuario',usersHandler)
 app.put('/api/usuario',usersHandler)
@@ -34,6 +36,11 @@ app.get('/api/cuentas',accountsHandler)
 
 app.post('/api/test',prismatest)
 app.get('/api/test',prismatest)
+
+app.post('/api/admin',adminorder)
+app.get('/api/admin',adminorder)
+app.get('/api/admin/:id',adminorder)
+app.delete('/api/admin',adminorder)
 
 
 

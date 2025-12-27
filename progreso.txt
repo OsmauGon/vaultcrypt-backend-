@@ -327,6 +327,11 @@ Revise el desarrollo y borre los any mas usados.
 En Vercel voy a dejar activo la rama para desarrollo mientras hago las pruebas
 Ya esta todo listo para unir el front-end con el backend
 
+#Dia 15(9/12) agregamos opsiones de admin
+Cree el archivo admin.ts, que tiene los endpoints de administrador. Todos requieren el token de administrador absoluto. Hace las gestiones CRUD para los usuarios
+Pero no he subido esta actualizacion a github.
+
+
 PARA FUTUROS DESPLIEGUES:
 el flujo completo es:
 - verificacion de estructura del proyecto (archivos raices, carpetas y tipados)

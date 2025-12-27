@@ -9,15 +9,22 @@ import { verifyAndGetUser } from '../utils/authMiddleware';
 
     const numeroSaltos = parseInt(process.env.HASH_ROUNDS!)
 export default async function usersHandler(req: Request, res: Response){
+    // Array para guardar tiempos
+    const timeline: Record<string, string> = {};
+    timeline["start"] = new Date().toISOString();//inicio de la funcion
     if(req.method === 'POST'){//LISTO!!
         const {name,emailPrincipal, password, secretWord} = req.body;
         if(!emailPrincipal || !password || !secretWord || !name){
             res.status(400).json({message: 'Faltan campos requeridos'})
             return
         }
+        timeline["verificacionDEcredenciales"] = new Date().toISOString();
         const hashedPassword = await bcrypt.hash(password,numeroSaltos);
+        timeline["hasheoDEcontraseña"] = new Date().toISOString();
         const hashedSecretword = await bcrypt.hash(password,numeroSaltos);
+        timeline["hasheoDEsecretword"] = new Date().toISOString();
         const token = jwt.sign({emailPrincipal},process.env.JWT_SECRET!,{expiresIn: '1h'})
+        timeline["generacionDEtoken"] = new Date().toISOString();
         try {
                 const nuevoUsuario = await prisma.usuario.create({
                 data: {
@@ -28,7 +35,8 @@ export default async function usersHandler(req: Request, res: Response){
                     role: 'user',
                     secretWord: hashedSecretword
                 }
-            })
+                })
+                timeline["registroDBexitoso"] = new Date().toISOString();
                 res.status(201).json({
                 message: 'Usuario registrado con exito',
                 token,
@@ -39,12 +47,14 @@ export default async function usersHandler(req: Request, res: Response){
                     role: nuevoUsuario.role,
                     secretWord: deriveSecretWord(hashedSecretword)
 
-                }
+                },
+                timeline
             })
         } catch (error) {
-            res.status(500).json({message: "Ha ocurrido un error en el registro: ", error})
+            timeline["fallaENalgunLugar"] = new Date().toISOString();
+            res.status(500).json({message: "Ha ocurrido un error en el registro: ", error, timeline})
         }
-        
+               
     }
     else if(req.method === 'GET'){//LISTO!!
         //esta funcion es para devolver al propio usuario mediante el token
@@ -125,3 +135,7 @@ export default async function usersHandler(req: Request, res: Response){
         res.status(405).json({message: 'Metodo no permitido'})
     }
 }
+
+
+
+
