@@ -110,9 +110,9 @@ export default async function usersHandler(req: Request, res: Response){
                     claveActual
                     
                 } = req.body;
-            if(!nuevoEmail || !nuevaPassword || !nuevoName || !listaActualizada || claveActual){
+            if(!nuevoEmail || !nuevaPassword || !nuevoName || !listaActualizada || !claveActual){
                 
-                res.status(400).json({message: 'Faltan datos para actualizar'})
+                res.status(400).json({error: {message: 'Faltan datos para actualizar'}})
                 return
             }
             //aqui va la logica para editar registros de la base de datos3
