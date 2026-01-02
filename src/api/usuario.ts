@@ -97,20 +97,29 @@ export default async function usersHandler(req: Request, res: Response){
         
             const token = authHeader.split(" ")[1];
             const { id, role } = await verifyAndGetUser(token);
-            console.log(id)
             const user = await prisma.usuario.findUnique({ where: { id } })
             if(!user){
                 res.status(404).json({message: 'Usuario no encontrado'})
                 return
             }
-            const {emailPrincipal: nuevoEmail, password: nuevaPassword, emailList :listaActualizada, name: nuevoName} = req.body;
-            if(!nuevoEmail || !nuevaPassword || !nuevoName || !listaActualizada){
+            const {
+                    emailPrincipal: nuevoEmail, 
+                    password: nuevaPassword, 
+                    emailList :listaActualizada, 
+                    name: nuevoName,
+                    claveActual
+                    
+                } = req.body;
+            if(!nuevoEmail || !nuevaPassword || !nuevoName || !listaActualizada || claveActual){
                 
                 res.status(400).json({message: 'Faltan datos para actualizar'})
                 return
             }
             //aqui va la logica para editar registros de la base de datos3
-
+            const verificadorAntiguaClave: boolean = await bcrypt.compare(claveActual, user.password);
+            if (!verificadorAntiguaClave){
+                res.status(401).json({message: "La contraseña actual registrada no coincide con la enviada "})
+            }
             const usuarioActualizado = await prisma.usuario.update({
                 where: { id: Number(user.id) },
                 data: {

@@ -5,8 +5,9 @@ import loginHandler from './api/login';
 import accountsHandler from './api/cuenta';
 import cors from 'cors'
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { prismatest } from './api/test';
-import { adminorder } from './api/admin';
+import { usersDelete, usersGlobalGet, usersIndividualGet, usersLoginPost, usersPut, usersRegisterPost } from './api/usersmannager';
+import { accountsDelete, accountsGlobalGet, accountsIndividualGet } from './api/accountsmannager';
+import { verificacionDEsolicitante } from './utils/mannagerVerificator';
 
 dotenv.config();
 const app = express();
@@ -34,13 +35,22 @@ app.post('/api/login', loginHandler);
 app.post('/api/cuentas',accountsHandler)
 app.get('/api/cuentas',accountsHandler)
 
-app.post('/api/test',prismatest)
-app.get('/api/test',prismatest)
-
-app.post('/api/admin',adminorder)
-app.get('/api/admin',adminorder)
-app.get('/api/admin/:id',adminorder)
-app.delete('/api/admin',adminorder)
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&6
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&6
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&6
+app.get('/api/usersmannager',usersGlobalGet)
+app.get('/api/usersmannager/:id',verificacionDEsolicitante,usersIndividualGet)
+app.post('/api/usersmannager',verificacionDEsolicitante,usersRegisterPost)
+app.post('/api/usersmannager/login',verificacionDEsolicitante,usersLoginPost)
+app.put('/api/usersmannager/:id',verificacionDEsolicitante,usersPut)
+app.delete('/api/usersmannager/:id',verificacionDEsolicitante,usersDelete)
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&6
+app.get('/api/accountsmannager',verificacionDEsolicitante,accountsGlobalGet)
+app.get('/api/accountsmannager/:id',verificacionDEsolicitante,accountsIndividualGet)
+app.delete('/api/accountsmannager/:id',verificacionDEsolicitante,accountsDelete)
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&6
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&6
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&6
 
 
 

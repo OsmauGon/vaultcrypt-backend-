@@ -11,12 +11,12 @@ export default async function loginHandler(req :Request, res :Response){
     const timeline: Record<string, string> = {};
     timeline["start"] = new Date().toISOString();//inicio de la funcion
     if(req.method !== 'POST'){
-        res.status(405).json({message: 'Metodo no permitido'})
+        res.status(400).json({message: 'Metodo no permitido'})
         return
     }
     const {emailPrincipal, password} = req.body;
     if(!emailPrincipal || !password){
-        res.status(400).json({message: 'Faltan campos requeridos'})
+        res.status(401).json({message: 'Faltan campos requeridos'})
         return
     }
     

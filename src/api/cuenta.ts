@@ -32,7 +32,7 @@ export default async function accountsHandler(req: Request, res: Response){
             if(id !== userId) {
                 res.status(403).json({message: "Recurso prohibido: Error en los IDs"})
             }
-            if(!userEmail || !userName || !serviceName || !servicePassword || !serviceUrl || !serviceDescription){
+            if(!serviceName || !serviceDescription || serviceType){
             res.status(400).json({message: 'Faltan campos requeridos'})
             return
             }
