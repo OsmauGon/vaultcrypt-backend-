@@ -18,7 +18,7 @@ export const verificacionDEsolicitante = async (req: Request, res: Response, nex
     solicitante = await prisma.usuario.findUnique({where: {id: Number(token.split(":")[1])}})
     
   } else {
-    return res.status(403).json({ error: "Token inválido" });
+    return res.status(403).json({ error: "Token inválido", token });
   }
 
   if(solicitante && solicitante.role && solicitante.role === "admin") next()
