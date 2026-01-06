@@ -21,6 +21,7 @@ export default async function accountsHandler(req: Request, res: Response){
                 servicePassword,
                 serviceType,
                 serviceDescription,
+                registratedDate
             } = req.body;
             
             const authHeader = req.headers["authorization"];
@@ -32,7 +33,7 @@ export default async function accountsHandler(req: Request, res: Response){
             if(id !== userId) {
                 res.status(403).json({message: "Recurso prohibido: Error en los IDs"})
             }
-            if(!serviceName || !serviceDescription || serviceType){
+            if(!serviceName || !serviceDescription || !serviceType){
             res.status(400).json({message: 'Faltan campos requeridos'})
             return
             }
@@ -47,6 +48,7 @@ export default async function accountsHandler(req: Request, res: Response){
                 servicePassword: encrypt(servicePassword),
                 serviceType,
                 serviceDescription: encrypt(serviceDescription),
+                creadoEn: registratedDate
                             
             }
            })
