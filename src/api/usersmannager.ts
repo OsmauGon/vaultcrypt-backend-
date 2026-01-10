@@ -47,20 +47,20 @@ export const usersIndividualGet = async (req: Request, res: Response)=>{
 export const usersRegisterPost = async (req: Request, res: Response)=>{
     /*Recorda que un registro creado aqui no sera util para el front-end porque no podemos recrear el primer encriptado que se hace en el front-end. A no ser que luego se edite desde el front-end */
     const timeline: Record<string, string> = {};
-    timeline["start"] = new Date().toISOString();
+    //timeline["start"] = new Date().toISOString();
     const {name,emailPrincipal, password, secretWord, role} = req.body;
     if(!emailPrincipal || !password || !secretWord || !name){
         res.status(400).json({message: 'Faltan campos requeridos'})
         return
     }
-    timeline["verificacionDEcredenciales"] = new Date().toISOString();
+    //timeline["verificacionDEcredenciales"] = new Date().toISOString();
     
     const hashedPassword = await bcrypt.hash(password,numeroSaltos);
-    timeline["hasheoDEcontraseña"] = new Date().toISOString();
+    //timeline["hasheoDEcontraseña"] = new Date().toISOString();
     const hashedSecretword = await bcrypt.hash(password,numeroSaltos);
-    timeline["hasheoDEsecretword"] = new Date().toISOString();
+    //timeline["hasheoDEsecretword"] = new Date().toISOString();
     const token = jwt.sign({emailPrincipal},process.env.JWT_SECRET!,{expiresIn: '1h'})
-    timeline["generacionDEtoken"] = new Date().toISOString();
+    //timeline["generacionDEtoken"] = new Date().toISOString();
     
     try {
         const nuevoUsuario = await prisma.usuario.create({
@@ -74,7 +74,7 @@ export const usersRegisterPost = async (req: Request, res: Response)=>{
             }
         })
 
-        timeline["registroDBexitoso"] = new Date().toISOString();
+        //timeline["registroDBexitoso"] = new Date().toISOString();
         res.status(201).json({
                 message: 'Usuario registrado con exito',
                 token,
@@ -88,7 +88,7 @@ export const usersRegisterPost = async (req: Request, res: Response)=>{
                 timeline
                 })
         } catch (error) {
-            timeline["fallaENalgunLugar"] = new Date().toISOString();
+            //timeline["fallaENalgunLugar"] = new Date().toISOString();
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 if (error.code === "P2002" && error?.meta?.target) {
                     res.status(400).json({meesage:`El valor del campo ${error.meta.target} ya existe en la base de datos`, timeline})
@@ -104,13 +104,13 @@ export const usersRegisterPost = async (req: Request, res: Response)=>{
 }
 export const usersLoginPost = async (req: Request, res: Response)=>{
     const timeline: Record<string, string> = {};
-    timeline["start"] = new Date().toISOString();
+    //timeline["start"] = new Date().toISOString();
     const {emailPrincipal, password} = req.body;
     if(!emailPrincipal || !password){
         res.status(400).json({message: 'Faltan campos requeridos'})
         return
     }
-    timeline["verificacionDEcredenciales"] = new Date().toISOString();
+    //timeline["verificacionDEcredenciales"] = new Date().toISOString();
     
 
     try {
@@ -123,15 +123,15 @@ export const usersLoginPost = async (req: Request, res: Response)=>{
         if (!passwordValida) {
             return res.status(401).json({ error: "Contraseña invalida" }); //cambiar por "credenciales invalidas"
         }
-        timeline["userverificated"] = new Date().toISOString();//inicio de la funcion
+        //timeline["userverificated"] = new Date().toISOString();//inicio de la funcion
 
         
         const token = jwt.sign({emailPrincipal},process.env.JWT_SECRET!,{expiresIn: '1h'})
-        timeline["generacionDEtoken"] = new Date().toISOString();
+        //timeline["generacionDEtoken"] = new Date().toISOString();
 
 
 
-        timeline["logueoexitoso"] = new Date().toISOString();
+        //timeline["logueoexitoso"] = new Date().toISOString();
         res.status(201).json({
                 message: 'Usuario registrado con exito',
                 token,
@@ -139,7 +139,7 @@ export const usersLoginPost = async (req: Request, res: Response)=>{
                 timeline
                 })
         } catch (error) {
-            timeline["fallaENalgunLugar"] = new Date().toISOString();
+            //timeline["fallaENalgunLugar"] = new Date().toISOString();
             res.status(500).json({
                 message: "Ha ocurrido un error en el registro: ", 
                 error, 

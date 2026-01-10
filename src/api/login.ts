@@ -9,7 +9,7 @@ import { deriveSecretWord } from "../utils/swmannager";
 
 export default async function loginHandler(req :Request, res :Response){
     const timeline: Record<string, string> = {};
-    timeline["start"] = new Date().toISOString();//inicio de la funcion
+    //timeline["start"] = new Date().toISOString();//inicio de la funcion
     if(req.method !== 'POST'){
         res.status(400).json({message: 'Metodo no permitido'})
         return
@@ -29,7 +29,7 @@ export default async function loginHandler(req :Request, res :Response){
     if (!usuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
-    timeline["userfinded"] = new Date().toISOString();//inicio de la funcion
+    //timeline["userfinded"] = new Date().toISOString();//inicio de la funcion
 
 
     // Verificar contraseña
@@ -37,11 +37,11 @@ export default async function loginHandler(req :Request, res :Response){
     if (!passwordValida) {
       return res.status(401).json({ error: "Contraseña invalida" }); //cambiar por "credenciales invalidas"
     }
-    timeline["userverificated"] = new Date().toISOString();//inicio de la funcion
+    //timeline["userverificated"] = new Date().toISOString();//inicio de la funcion
 
     // Generar JWT
     const token = jwt.sign({emailPrincipal},process.env.JWT_SECRET!,{expiresIn: '1h'})
-    timeline["tokengenerated"] = new Date().toISOString();//inicio de la funcion
+    //timeline["tokengenerated"] = new Date().toISOString();//inicio de la funcion
     // Respuesta
     res.status(200).json({
                     message: 'Usuario autenticado',
